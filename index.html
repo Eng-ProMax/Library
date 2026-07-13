@@ -232,66 +232,51 @@
     height: 100%; width: 0%; transition: width 0.1s ease;
   }
 
-  /* ---------- قارئ عمودي من الأعلى للأسفل متطور (Continuous Vertical Reader) ---------- */
+  /* ---------- قارئ متطور: يدعم التمرير العمودي/الأفقي + تكبير/تصغير + رسم وهايلايت ---------- */
   .reader-overlay{position:fixed; inset:0; background:var(--bg); z-index:50; display:flex; flex-direction:column;}
   .reader-overlay[hidden]{display:none;}
-  
-  .reader-topbar{
-    background:var(--bg-elevated); border-bottom:1px solid var(--border); padding:10px 14px;
-    display:flex; flex-direction:column; gap:8px; flex-shrink:0;
-  }
-  .reader-topbar-row1{
-    display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%;
-  }
-  .reader-topbar-row2{
-    display:flex; align-items:center; gap:10px; flex-wrap:wrap; border-top:1px solid var(--border); padding-top:6px;
-  }
-  .reader-topbar .rt-side{font-size:13px; color:var(--text); font-weight:600; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .reader-topbar{background:var(--bg-elevated); border-bottom:1px solid var(--border); padding:10px 14px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-shrink:0; flex-wrap:wrap;}
+  .reader-topbar .rt-side{font-size:13px; color:var(--text); font-weight:600; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:60px;}
   .reader-topbar .rt-center{font-weight:600; font-size:12.5px; color:var(--muted); white-space:nowrap;}
   .reader-back{border:none; background:none; font-size:16px; color:var(--text); cursor:pointer; padding:0 4px;}
-  
-  /* الحاوية وتعديلات طريقة العرض للتمرير الأفقي والعمودي */
+
+  .reader-tools-group{display:flex; align-items:center; gap:4px;}
+  .reader-tool-btn{
+    border:1px solid var(--border); background:var(--bg-elevated); color:var(--text); cursor:pointer;
+    width:32px; height:32px; border-radius:8px; font-size:14px; display:flex; align-items:center; justify-content:center; font-family:inherit;
+  }
+  .reader-tool-btn.active{background:var(--accent); color:var(--bg-elevated); border-color:var(--accent);}
+  .zoom-label{font-size:11.5px; color:var(--muted); min-width:38px; text-align:center;}
+
+  .draw-toolbar{
+    background:var(--bg-elevated); border-bottom:1px solid var(--border); padding:10px 14px;
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap; flex-shrink:0;
+  }
+  .draw-toolbar[hidden]{display:none;}
+  .draw-tool-chip{
+    border:1px solid var(--border); background:var(--bg); color:var(--text); border-radius:20px;
+    padding:6px 12px; font-size:12.5px; cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:5px;
+  }
+  .draw-tool-chip.active{background:var(--accent); color:var(--bg-elevated); border-color:var(--accent);}
+  .draw-toolbar input[type="color"]{
+    width:32px; height:32px; padding:0; border:1px solid var(--border); border-radius:8px; background:none; cursor:pointer;
+  }
+  .draw-toolbar input[type="range"]{width:90px; accent-color:var(--accent);}
+  .draw-size-label{font-size:11px; color:var(--muted); white-space:nowrap;}
+
+  /* الحاوية تسمح بالتمرير العمودي أو الأفقي حسب اختيار المستخدم */
   .reader-canvas-wrap{flex:1; overflow-y:auto; overflow-x:hidden; padding:20px 10px 90px; scroll-behavior: smooth;}
-  .reader-canvas-wrap.horizontal{
-    overflow-x: auto; overflow-y: hidden; display: flex; align-items: center; justify-content: center; padding: 20px 10px;
-  }
   .reader-pages-container { display:flex; flex-direction:column; gap:20px; align-items:center; width:100%; }
-  .reader-canvas-wrap.horizontal .reader-pages-container {
-    flex-direction: row; width: auto; height: 100%; gap: 30px; align-items: center;
-  }
-  
+  .reader-pages-container.horizontal { flex-direction:row; align-items:flex-start; width:max-content; padding-inline-end:20px; }
+
   .page-container {
     box-shadow: 0 5px 20px rgba(0,0,0,0.15); border-radius: 6px; 
-    background: #fff; overflow: hidden; position: relative; max-width: 100%; transition: transform 0.2s ease;
+    background: #fff; overflow: hidden; position: relative; max-width: 100%; flex-shrink:0;
   }
-  .reader-canvas-wrap.horizontal .page-container {
-    max-height: 100%; max-width: none; flex-shrink: 0;
-  }
-  .page-container canvas { display: block; max-width: 100%; height: auto !important; }
-  
-  /* طبقة الرسم الشفافة الفوقية */
-  .drawing-canvas {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;
-    pointer-events: none; /* يتم تفعيل الأحداث ديناميكياً عند تفعيل وضع الرسم */
-  }
-  .drawing-active .drawing-canvas {
-    pointer-events: auto; cursor: crosshair;
-  }
-
-  /* خيارات التحكم المخصصة داخل القارئ */
-  .reader-opt-btn{
-    border:1px solid var(--border); background:var(--bg-elevated); color:var(--text);
-    padding:4px 8px; border-radius:6px; font-size:12px; cursor:pointer; font-family:inherit;
-    display:flex; align-items:center; gap:4px;
-  }
-  .reader-opt-btn.active{
-    background:var(--accent); color:var(--bg-elevated); border-color:var(--accent);
-  }
-  .color-dot{
-    width:16px; height:16px; border-radius:50%; cursor:pointer; border:1px solid rgba(0,0,0,0.2);
-  }
-  .color-dot.active{
-    transform:scale(1.2); outline:2px solid var(--accent);
+  .page-container canvas.pdf-canvas { display: block; max-width: 100%; height: auto !important; }
+  .page-container canvas.draw-canvas{
+    position:absolute; inset:0; width:100%; height:100%; pointer-events:none; touch-action:auto;
   }
 
   .toast{position:fixed; bottom:96px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg);
@@ -326,7 +311,7 @@
           <div class="field">
             <label data-t="emailLabel">البريد الإلكتروني</label>
             <input type="email" id="loginEmail" required autocomplete="email">
-         </div>
+          </div>
           <div class="field">
             <label data-t="passwordLabel">كلمة المرور</label>
             <input type="password" id="loginPassword" required autocomplete="current-password">
@@ -414,7 +399,8 @@
         <div class="adhkar-list" id="adhkarList"></div>
       </section>
     </main>
-[7/13/2026 1:42 PM] ❀: <nav class="bottom-nav">
+
+    <nav class="bottom-nav">
       <button class="nav-btn active" id="navHome" onclick="switchTab('home')">
         <span class="nav-icon">🏠</span><span data-t="navHome">الرئيسية</span>
       </button>
@@ -467,45 +453,31 @@
       </div>
     </div>
 
-    <!-- READER (تعديل كامل ليعمل من الأعلى للأسفل وبأدوات عرض ورسم متكاملة) -->
+    <!-- READER (تمرير عمودي/أفقي قابل للاختيار + تكبير/تصغير + رسم وهايلايت) -->
     <div class="reader-overlay" id="readerOverlay" hidden>
       <div class="reader-topbar">
-        <div class="reader-topbar-row1">
-          <button class="reader-back" onclick="closeReader()">✕</button>
-          <div class="rt-side" id="readerBookTitle">—</div>
-          <div class="rt-center" id="readerPageNum">—</div>
+        <button class="reader-back" onclick="closeReader()">✕</button>
+        <div class="rt-side" id="readerBookTitle">—</div>
+        <div class="reader-tools-group">
+          <button class="reader-tool-btn" id="dirToggleBtn" onclick="toggleReaderDirection()" title="اتجاه التمرير">↕️</button>
+          <button class="reader-tool-btn" onclick="zoomReader(-0.1)" title="تصغير">－</button>
+          <span class="zoom-label" id="zoomLabel">100%</span>
+          <button class="reader-tool-btn" onclick="zoomReader(0.1)" title="تكبير">＋</button>
+          <button class="reader-tool-btn" id="drawToggleBtn" onclick="toggleDrawPanel()" title="الرسم والتظليل">✏️</button>
         </div>
-        
-        <div class="reader-topbar-row2">
-          <!-- نمط التمرير -->
-          <button class="reader-opt-btn active" id="scrollVerticalBtn" onclick="setScrollDirection('vertical')">↕ عمودي</button>
-          <button class="reader-opt-btn" id="scrollHorizontalBtn" onclick="setScrollDirection('horizontal')">↔ أفقي</button>
-          
-          <!-- التوجيه والدوران -->
-          <button class="reader-opt-btn" onclick="rotateBookLayout()">🔄 تدوير</button>
-          
-          <!-- التكبير والتصغير -->
-          <button class="reader-opt-btn" onclick="zoomReader(0.1)">➕ تكبير</button>
-          <button class="reader-opt-btn" onclick="zoomReader(-0.1)">➖ تصغير</button>
-          
-          <!-- أدوات الرسم -->
-          <button class="reader-opt-btn" id="drawPenBtn" onclick="setDrawingTool('pen')">✏️ قلم</button>
-          <button class="reader-opt-btn" id="drawHighlightBtn" onclick="setDrawingTool('highlight')">🖍️ تظليل</button>
-          <button class="reader-opt-btn" id="drawEraserBtn" onclick="setDrawingTool('eraser')">🧽 ممحاة</button>
-          <button class="reader-opt-btn" onclick="clearAllDrawings()">🗑️ مسح الكل</button>
-          <!-- تحجيم القلم واللون -->
-          <input type="range" id="brushSize" min="2" max="25" value="4" style="width: 60px;" onchange="updateBrushConfig()">
-          
-          <div class="color-dot active" style="background:#ff3b30;" onclick="selectBrushColor('#ff3b30', this)"></div>
-          <div class="color-dot" style="background:#ffcc00;" onclick="selectBrushColor('#ffcc00', this)"></div>
-          <div class="color-dot" style="background:#007aff;" onclick="selectBrushColor('#007aff', this)"></div>
-          <div class="color-dot" style="background:#34c759;" onclick="selectBrushColor('#34c759', this)"></div>
-        </div>
+        <div class="rt-center" id="readerPageNum">—</div>
       </div>
-      
+      <div class="draw-toolbar" id="drawToolbar" hidden>
+        <button class="draw-tool-chip active" id="toolPenBtn" onclick="setDrawTool('pen')">✏️ قلم</button>
+        <button class="draw-tool-chip" id="toolHighlightBtn" onclick="setDrawTool('highlighter')">🖍 هايلايت</button>
+        <input type="color" id="drawColorInput" value="#e53e3e" oninput="setDrawColor(this.value)" title="اللون">
+        <span class="draw-size-label" data-t="drawSizeLabel">الحجم</span>
+        <input type="range" id="drawSizeInput" min="1" max="40" value="4" oninput="setDrawSize(this.value)">
+        <button class="draw-tool-chip" onclick="clearAllDrawings()">🗑 مسح الكل</button>
+      </div>
       <div class="reader-canvas-wrap" id="readerCanvasWrap">
         <div class="reader-pages-container" id="readerPagesContainer">
-          <!-- سيتم توليد الصفحات هنا تحت بعضها تلقائياً -->
+          <!-- سيتم توليد الصفحات هنا تلقائياً حسب الاتجاه المختار -->
         </div>
       </div>
     </div>
@@ -564,11 +536,12 @@ const I18N = {
     emptyLibrary:'المكتبة فارغة حاليًا', emptyLibraryDesc:'أضف كتبًا من لوحة تحكم المدير لتظهر هنا فورًا لجميع المستخدمين.',
     notConnected:'لم يتم الاتصال بقاعدة البيانات بعد', notConnectedDesc:'أضف بيانات Supabase أعلى ملف الكود لتفعيل الحسابات والكتب.',
     loading:'جارِ التحميل واستخراج الصفحات...', pdfLoadError:'تعذّر تحميل الكتاب، تحقق من اتصالك بالإنترنت',
-    pageOf:(n,total)=>صفحة ${n} من ${total}, tapToRetry:'اضغط لإعادة المحاولة',
+    pageOf:(n,total)=>`صفحة ${n} من ${total}`, tapToRetry:'اضغط لإعادة المحاولة',
     errInvalidCreds:'البريد الإلكتروني أو كلمة المرور غير صحيحة', errEmailTaken:'هذا البريد مستخدم بالفعل',
     errGeneric:'حدث خطأ، حاول مرة أخرى', errWeakPass:'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
     checkEmailMsg:'تم إرسال رابط تأكيد إلى بريدك الإلكتروني', resetSentMsg:'تم إرسال رابط استعادة كلمة المرور إلى بريدك',
     needAccountMsg:'سجّل دخولك لحفظ المفضلة وسجل القراءة',
+    drawSizeLabel:'الحجم',
   },
   en:{
     appName:'Imam Al-Muttaqin Library', loginSubtitle:'Your Arabic library for reading and discovery',
@@ -591,11 +564,12 @@ const I18N = {
     emptyLibrary:'The library is empty right now', emptyLibraryDesc:'Add books from the admin dashboard and they will appear here instantly for every user.',
     notConnected:'Not connected to a database yet', notConnectedDesc:'Add your Supabase credentials at the top of the code to enable accounts and books.',
     loading:'Loading & rendering pages...', pdfLoadError:'Could not load the book, check your connection',
-    pageOf:(n,total)=>Page ${n} of ${total}, tapToRetry:'Tap to retry',
+    pageOf:(n,total)=>`Page ${n} of ${total}`, tapToRetry:'Tap to retry',
     errInvalidCreds:'Incorrect email or password', errEmailTaken:'This email is already registered',
     errGeneric:'Something went wrong, please try again', errWeakPass:'Password must be at least 6 characters',
     checkEmailMsg:'A confirmation link has been sent to your email', resetSentMsg:'A password reset link has been sent to your email',
     needAccountMsg:'Log in to save favorites and reading history',
+    drawSizeLabel:'Size',
   }
 };
 
@@ -624,10 +598,11 @@ function showAuthMsg(text, type){
   el.className = 'authMsg show ' + type;
 }
 function hideAuthMsg(){ document.getElementById('authMsg').className = 'authMsg'; }
+
 function setBtnLoading(btnId, loading, labelKey){
   const btn = document.getElementById(btnId);
   btn.disabled = loading;
-  btn.innerHTML = loading ? '<span class="spinner"></span>' : <span data-t="${labelKey}">${t(labelKey)}</span>;
+  btn.innerHTML = loading ? '<span class="spinner"></span>' : `<span data-t="${labelKey}">${t(labelKey)}</span>`;
 }
 
 async function handleLogin(e){
@@ -711,7 +686,7 @@ async function loadBooks(){
 async function loadAdhkar(){
   if(!CONFIGURED){ ADHKAR = []; return; }
   const { data, error } = await supabaseClient.from('adhkar').select('*').order('created_at', { ascending:false });
-  ADHKAR = error ? [] : (data  []).map(row => ({ id: row.id, text: row.text_ar, source: row.source, ornament: row.ornament  'hizb' }));
+  ADHKAR = error ? [] : (data || []).map(row => ({ id: row.id, text: row.text_ar, source: row.source, ornament: row.ornament || 'hizb' }));
 }
 function ornamentBar(key){
   const map = {hizb:'۞', star8:'✦ ✧ ✦', floral:'❧ ❧ ❧', classic:'﴾ ﴿'};
@@ -720,16 +695,16 @@ function ornamentBar(key){
 function renderAdhkar(){
   const list = document.getElementById('adhkarList');
   if(!ADHKAR.length){
-    list.innerHTML = <div class="empty-state"><div class="ee-icon">📿</div><p><strong>${t('emptyAdhkar')}</strong></p></div>; return;
+    list.innerHTML = `<div class="empty-state"><div class="ee-icon">📿</div><p><strong>${t('emptyAdhkar')}</strong></p></div>`; return;
   }
-  list.innerHTML = ADHKAR.map(a=>
+  list.innerHTML = ADHKAR.map(a=>`
     <div class="adhkar-card">
       <div class="orn-line">${ornamentBar(a.ornament)}</div>
       <p class="adhkar-text">${a.text||''}</p>
-      ${a.source ? <div class="adhkar-source">— ${a.source}</div> : ''}
+      ${a.source ? `<div class="adhkar-source">— ${a.source}</div>` : ''}
       <div class="orn-line bottom">${ornamentBar(a.ornament)}</div>
     </div>
-  ).join('');
+  `).join('');
 }
 
 async function loadRatings(){
@@ -751,7 +726,7 @@ async function rateBook(id, value){
 }
 
 async function loadUserData(){
-  if(!CONFIGURED  !state.user  !state.user.id) return;
+  if(!CONFIGURED || !state.user || !state.user.id) return;
   const uid = state.user.id;
   const [{ data: favs }, { data: hist }, { data: myRates }] = await Promise.all([
     supabaseClient.from('favorites').select('book_id').eq('user_id', uid),
@@ -792,42 +767,42 @@ function renderHomeGrid(){
   if(!BOOKS.length){ grid.innerHTML = emptyStateHtml(); return; }
   grid.innerHTML = BOOKS.slice(0, 8).map(bookCardHtml).join('');
 }
-function emptyStateHtml(){ return <div class="empty-state"><div class="ee-icon">📭</div><p><strong>${t('emptyLibrary')}</strong></p></div>; }
+function emptyStateHtml(){ return `<div class="empty-state"><div class="ee-icon">📭</div><p><strong>${t('emptyLibrary')}</strong></p></div>`; }
 
 function renderCategoryChips(){
   const chips = CATEGORIES.map(c=>{
-    return <button class="chip ${state.selectedCategory === c.key?'active':''}" onclick="selectCategory('${c.key}')">${state.lang==='ar'?c.ar:c.en}</button>;
+    return `<button class="chip ${state.selectedCategory === c.key?'active':''}" onclick="selectCategory('${c.key}')">${state.lang==='ar'?c.ar:c.en}</button>`;
   }).join('');
-  document.getElementById('categoryChips').innerHTML = <button class="chip ${state.selectedCategory===null?'active':''}" onclick="selectCategory(null)">${state.lang==='ar'?'الكل':'All'}</button> + chips;
+  document.getElementById('categoryChips').innerHTML = `<button class="chip ${state.selectedCategory===null?'active':''}" onclick="selectCategory(null)">${state.lang==='ar'?'الكل':'All'}</button>` + chips;
 }
 function selectCategory(key){ state.selectedCategory = key; renderCategoryChips(); renderSearch(); }
 function renderSearch(){
   const query = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
   let results = BOOKS.filter(b=>{
     return (!state.selectedCategory || b.cat === state.selectedCategory) &&
-           (!query  b.title.ar.toLowerCase().includes(query)  b.title.en.toLowerCase().includes(query));
+           (!query || b.title.ar.toLowerCase().includes(query) || b.title.en.toLowerCase().includes(query));
   });
   const grid = document.getElementById('searchGrid');
   if(!BOOKS.length){ grid.innerHTML = emptyStateHtml(); return; }
-  grid.innerHTML = results.length ? results.map(bookCardHtml).join('') : <p class="drawer-empty">${t('noResults')}</p>;
+  grid.innerHTML = results.length ? results.map(bookCardHtml).join('') : `<p class="drawer-empty">${t('noResults')}</p>`;
 }
 
 function bookCardHtml(b){
   const info = catInfo(b.cat);
-  return <div class="book-card" style="--cat-color:${b.color||info.color}" onclick="openBookModal('${b.id}')">
+  return `<div class="book-card" style="--cat-color:${b.color||info.color}" onclick="openBookModal('${b.id}')">
       ${state.favorites.has(b.id) ? '<span class="fav-mark">⭐</span>' : ''}
       <span class="book-tag">${state.lang==='ar'?info.ar:info.en}</span>
       <div class="book-title">${b.title[state.lang]}</div>
       <div class="book-author">${t('by')} ${b.author[state.lang]}</div>
-    </div>;
+    </div>`;
 }
 
 function openBookModal(id){
   const b = BOOKS.find(x=>String(x.id)===String(id)); if(!b) return;
   const info = catInfo(b.cat); const isFav = state.favorites.has(b.id); const isRead = state.history.has(b.id);
   const { avg, count } = ratingStatsFor(b.id);
-  const starsHtml = [1,2,3,4,5].map(n=> <span class="star ${n<=(state.myRatings[b.id]||0)?'filled':''}" onclick="rateBook('${b.id}', ${n})">★</span>).join('');
-  document.getElementById('bookModal').innerHTML = 
+  const starsHtml = [1,2,3,4,5].map(n=> `<span class="star ${n<=(state.myRatings[b.id]||0)?'filled':''}" onclick="rateBook('${b.id}', ${n})">★</span>`).join('');
+  document.getElementById('bookModal').innerHTML = `
     <button class="modal-close" onclick="closeModal()">✕</button>
     <div class="modal-cover" style="background:${b.color||info.color}">📕</div>
     <h3 class="display">${b.title[state.lang]}</h3>
@@ -838,12 +813,13 @@ function openBookModal(id){
       <button class="btn primary" onclick="readBook('${b.id}')">${t('readBtn')}</button>
       <button class="btn ${isFav?'primary':''}" onclick="toggleFav('${b.id}')">${isFav?t('removeFav'):t('addFav')}</button>
       <button class="btn ${isRead?'primary':''}" onclick="toggleRead('${b.id}')">${isRead?t('markedRead'):t('markRead')}</button>
-    </div>;
+    </div>`;
   document.getElementById('modalOverlay').hidden = false;
 }
 function closeModal(){ document.getElementById('modalOverlay').hidden = true; }
 function closeModalOnOverlay(e){ if(e.target.id==='modalOverlay') closeModal(); }
-  async function toggleFav(id){
+
+async function toggleFav(id){
   if(state.isGuest){ showToast(t('needAccountMsg')); return; }
   const has = state.favorites.has(id);
   if(has){ state.favorites.delete(id); } else { state.favorites.add(id); }
@@ -865,23 +841,17 @@ async function toggleRead(id){
 }
 
 /* =========================================================================
-   تطوير القارئ الجديد: تحميل مسبق كامل وعرض عمودي تتابعي، تدوير، تكبير ورسم تفاعلي
+   القارئ: تحميل مسبق كامل + اتجاه تمرير قابل للاختيار + تكبير/تصغير + رسم وهايلايت
    ========================================================================= */
 let pdfInstance = null;
 if(typeof pdfjsLib !== 'undefined'){
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 }
 
-// متغيرات إعدادات العرض والرسم
-let readerZoom = 1.0;
-let readerRotation = 0;
-let scrollDir = 'vertical'; // vertical أو horizontal
-let activeDrawingTool = null; // pen, highlight, eraser, null
-let brushColor = '#ff3b30';
-let brushWidth = 4;
-let isDrawing = false;
-let lastX = 0;
-let lastY = 0;
+// حالة اتجاه القارئ والتكبير
+let readerState = { direction:'vertical', zoom:1 };
+// حالة أدوات الرسم/الهايلايت
+let drawState = { mode:false, tool:'pen', color:'#e53e3e', size:4, drawing:false, lastX:0, lastY:0, activeCanvas:null };
 
 async function readBook(id){
   const book = BOOKS.find(b=>String(b.id)===String(id));
@@ -889,7 +859,15 @@ async function readBook(id){
   
   closeModal();
   state.currentPdfBookId = id;
+
+  // إعادة ضبط إعدادات القارئ عند فتح كتاب جديد
+  readerState.zoom = 1;
+  drawState.mode = false; drawState.drawing = false; drawState.activeCanvas = null;
+  document.getElementById('zoomLabel').textContent = '100%';
+  document.getElementById('drawToolbar').hidden = true;
+  document.getElementById('drawToggleBtn').classList.remove('active');
   
+  // 1. إظهار واجهة التحميل المسبق الكامل للملف لمنع الخروج أو الانهيار
   const dlOverlay = document.getElementById('downloadOverlay');
   const dlProgress = document.getElementById('downloadProgress');
   const dlPercentage = document.getElementById('downloadPercentage');
@@ -899,6 +877,7 @@ async function readBook(id){
   dlPercentage.textContent = '0%';
   
   try {
+    // تحميل الملف كـ Blob عبر نظام XHR لمتابعة النسبة المئوية للتحميل بدقة
     const response = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('GET', book.pdfUrl, true);
@@ -920,28 +899,84 @@ async function readBook(id){
       xhr.send();
     });
 
+    // تحويل الـ Blob المحمل بالكامل إلى ArrayBuffer تمهيداً لعرضه محلياً داخل التطبيق
     const arrayBuffer = await response.arrayBuffer();
     
     document.getElementById('readerBookTitle').textContent = book.title[state.lang];
+    const container = document.getElementById('readerPagesContainer');
+    container.innerHTML = ''; // تصفية القارئ القديم
+
+    // ضبط اتجاه الحاوية الافتراضي (عمودي) عند كل فتح لكتاب جديد
+    readerState.direction = 'vertical';
+    container.classList.remove('horizontal');
+    document.getElementById('dirToggleBtn').textContent = '↕️';
+    const wrap = document.getElementById('readerCanvasWrap');
+    wrap.style.overflowX = 'hidden'; wrap.style.overflowY = 'auto';
+    container.style.zoom = 1;
     
+    // تحميل وثيقة الـ PDF من الذاكرة المحلية مباشرة بدون أي استهلاك إضافي للإنترنت
     pdfInstance = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    dlOverlay.hidden = true; 
+    dlOverlay.hidden = true; // إخفاء واجهة التحميل فور نجاح العملية
     document.getElementById('readerOverlay').hidden = false;
     
     document.getElementById('readerPageNum').textContent = t('loading');
     
-    // تصفير وتهيئة إعدادات القارئ الافتراضية
-    readerZoom = 1.0;
-    readerRotation = 0;
-    activeDrawingTool = null;
-    deactivateDrawingInterface();
-    
-    await renderPdfPages();
+    // 2. معالجة ورسم كافة صفحات الكتاب مع طبقة رسم/تظليل شفافة فوق كل صفحة
+    const totalPages = pdfInstance.numPages;
+    const availableWidth = wrap.clientWidth - 20;
 
+    for (let i = 1; i <= totalPages; i++) {
+      const pageContainer = document.createElement('div');
+      pageContainer.className = 'page-container';
+      pageContainer.dataset.page = i;
+      
+      const canvas = document.createElement('canvas');
+      canvas.className = 'pdf-canvas';
+      pageContainer.appendChild(canvas);
+
+      const page = await pdfInstance.getPage(i);
+      const unscaledViewport = page.getViewport({ scale: 1 });
+      const scale = Math.min(2.0, availableWidth / unscaledViewport.width);
+      const viewport = page.getViewport({ scale: scale });
+      
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      
+      const ctx = canvas.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+      // طبقة رسم/هايلايت شفافة فوق الصفحة بنفس أبعادها
+      const drawCanvas = document.createElement('canvas');
+      drawCanvas.className = 'draw-canvas';
+      drawCanvas.width = viewport.width;
+      drawCanvas.height = viewport.height;
+      pageContainer.appendChild(drawCanvas);
+      attachDrawEvents(drawCanvas);
+
+      container.appendChild(pageContainer);
+    }
+
+    document.getElementById('readerPageNum').textContent = t('pageOf')(totalPages, totalPages);
     if(typeof confetti === 'function') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
     
     if(CONFIGURED) supabaseClient.rpc('increment_book_views', { p_book_id: id }).then(()=>{});
     if(!state.history.has(id)){ toggleRead(id); }
+
+    // إضافة مراقب لتحديث رقم الصفحة الحالية أثناء التمرير (عمودي أو أفقي)
+    wrap.onscroll = () => {
+      const children = container.children;
+      for (let child of children) {
+        const rect = child.getBoundingClientRect();
+        const wrapRect = wrap.getBoundingClientRect();
+        const inView = readerState.direction === 'horizontal'
+          ? (rect.left >= wrapRect.left - 20 && rect.left <= wrapRect.left + wrapRect.width / 2)
+          : (rect.top >= 0 && rect.top <= window.innerHeight / 2);
+        if (inView) {
+          document.getElementById('readerPageNum').textContent = t('pageOf')(child.dataset.page, totalPages);
+          break;
+        }
+      }
+    };
 
   } catch (error) {
     console.error(error);
@@ -949,237 +984,106 @@ async function readBook(id){
     showToast(t('pdfLoadError'));
   }
 }
-  async function renderPdfPages(){
-  if(!pdfInstance) return;
-  const container = document.getElementById('readerPagesContainer');
-  container.innerHTML = ''; 
-  
-  const totalPages = pdfInstance.numPages;
-  const wrap = document.getElementById('readerCanvasWrap');
-  const availableWidth = wrap.clientWidth - 20;
-
-  for (let i = 1; i <= totalPages; i++) {
-    const pageContainer = document.createElement('div');
-    pageContainer.className = 'page-container';
-    pageContainer.dataset.page = i;
-    
-    // الـ Canvas الأساسي لعرض صفحة الـ PDF
-    const canvas = document.createElement('canvas');
-    pageContainer.appendChild(canvas);
-    
-    // Canvas شفاف إضافي خاص بالرسم فوق الصفحة
-    const drawCanvas = document.createElement('canvas');
-    drawCanvas.className = 'drawing-canvas';
-    pageContainer.appendChild(drawCanvas);
-    
-    container.appendChild(pageContainer);
-
-    const page = await pdfInstance.getPage(i);
-    const unscaledViewport = page.getViewport({ scale: 1, rotation: readerRotation });
-    
-    // دمج التكبير مع التجاوب التلقائي للأبعاد
-    const scale = Math.min(2.0, availableWidth / unscaledViewport.width) * readerZoom;
-    const viewport = page.getViewport({ scale: scale, rotation: readerRotation });
-    
-    // تهيئة كود الرسم الأساسي
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-    const ctx = canvas.getContext('2d');
-    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-    
-    // تهيئة كود الرسم التفاعلي
-    drawCanvas.width = viewport.width;
-    drawCanvas.height = viewport.height;
-    initDrawingEvents(drawCanvas);
-  }
-
-  document.getElementById('readerPageNum').textContent = t('pageOf')(1, totalPages);
-
-  // تحديث رقم الصفحة الحالية أثناء التمرير من الأعلى إلى الأسفل أو أفقياً
-  wrap.onscroll = () => {
-    const children = container.children;
-    for (let child of children) {
-      const rect = child.getBoundingClientRect();
-      const isVisible = scrollDir === 'vertical' 
-        ? (rect.top >= 0 && rect.top <= window.innerHeight / 2)
-        : (rect.left >= 0 && rect.left <= window.innerWidth / 2);
-        
-      if (isVisible) {
-        document.getElementById('readerPageNum').textContent = t('pageOf')(child.dataset.page, totalPages);
-        break;
-      }
-    }
-  };
-}
-
-/* =========================================================================
-   إعدادات ووظائف تدوير، تكبير وتمرير الصفحات
-   ========================================================================= */
-function setScrollDirection(dir){
-  scrollDir = dir;
-  const wrap = document.getElementById('readerCanvasWrap');
-  
-  document.getElementById('scrollVerticalBtn').classList.toggle('active', dir === 'vertical');
-  document.getElementById('scrollHorizontalBtn').classList.toggle('active', dir === 'horizontal');
-  
-  if(dir === 'vertical'){
-    wrap.classList.remove('horizontal');
-  } else {
-    wrap.classList.add('horizontal');
-  }
-  renderPdfPages();
-}
-
-function rotateBookLayout(){
-  readerRotation = (readerRotation + 90) % 360;
-  renderPdfPages();
-}
-
-function zoomReader(amount){
-  const newZoom = readerZoom + amount;
-  if(newZoom >= 0.5 && newZoom <= 3.0){
-    readerZoom = newZoom;
-    renderPdfPages();
-  }
-}
-
-/* =========================================================================
-   تطبيق محرك الرسم والتظليل والممحاة على صفحات الـ PDF
-   ========================================================================= */
-function setDrawingTool(tool){
-  // إلغاء تفعيل الأداة عند الضغط عليها مرة أخرى لتسهيل التمرير والتصفح
-  if(activeDrawingTool === tool){
-    activeDrawingTool = null;
-    deactivateDrawingInterface();
-    return;
-  }
-  
-  activeDrawingTool = tool;
-  
-  document.getElementById('drawPenBtn').classList.toggle('active', tool === 'pen');
-  document.getElementById('drawHighlightBtn').classList.toggle('active', tool === 'highlight');
-  document.getElementById('drawEraserBtn').classList.toggle('active', tool === 'eraser');
-  
-  const container = document.getElementById('readerPagesContainer');
-  if(activeDrawingTool) {
-    container.classList.add('drawing-active');
-  } else {
-    container.classList.remove('drawing-active');
-  }
-}
-
-function deactivateDrawingInterface(){
-  document.getElementById('drawPenBtn').classList.remove('active');
-  document.getElementById('drawHighlightBtn').classList.remove('active');
-  document.getElementById('drawEraserBtn').classList.remove('active');
-  document.getElementById('readerPagesContainer').classList.remove('drawing-active');
-}
-
-function selectBrushColor(color, element){
-  brushColor = color;
-  document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('active'));
-  element.classList.add('active');
-}
-
-function updateBrushConfig(){
-  brushWidth = parseInt(document.getElementById('brushSize').value) || 4;
-}
-
-function initDrawingEvents(canvas){
-  const ctx = canvas.getContext('2d');
-  
-  function getCoordinates(e){
-    const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    // حساب المقياس الحقيقي نسبة لأبعاد الكانفاس الفعلية المعروضة
-    return {
-      x: (clientX - rect.left) * (canvas.width / rect.width),
-      y: (clientY - rect.top) * (canvas.height / rect.height)
-    };
-  }
-
-  function startDraw(e){
-    if(!activeDrawingTool) return;
-    isDrawing = true;
-    const coords = getCoordinates(e);
-    lastX = coords.x;
-    lastY = coords.y;
-  }
-
-  function draw(e) {
-    if (!isDrawing || !activeDrawingTool) return;
-    e.preventDefault();
-    const coords = getCoordinates(e);
-    
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(coords.x, coords.y);
-    
-    if (activeDrawingTool === 'pen') {
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = brushColor;
-      ctx.lineWidth = brushWidth;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.stroke();
-    } else if (activeDrawingTool === 'highlight') {
-      ctx.globalCompositeOperation = 'source-over';
-      // دمج شفافية اللون الشفاف لإجراء التظليل والتمييز بوضوح تام للنصوص بالأسفل
-      ctx.strokeStyle = convertHexToRGBA(brushColor, 0.4);
-      ctx.lineWidth = brushWidth * 2.5; // الهايلايت يكون أعرض بطبيعته
-      ctx.lineCap = 'square';
-      ctx.lineJoin = 'miter';
-      ctx.stroke();
-    } else if (activeDrawingTool === 'eraser') {
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.lineWidth = brushWidth * 3;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.stroke();
-    }
-    
-    lastX = coords.x;
-    lastY = coords.y;
-  }
-
-  function stopDraw(){
-    isDrawing = false;
-  }
-
-  // أحداث الماوس
-  canvas.addEventListener('mousedown', startDraw);
-  canvas.addEventListener('mousemove', draw);
-  canvas.addEventListener('mouseup', stopDraw);
-  canvas.addEventListener('mouseout', stopDraw);
-
-  // أحداث اللمس للهواتف الذكية والأجهزة اللوحية
-  canvas.addEventListener('touchstart', startDraw, { passive: false });
-  canvas.addEventListener('touchmove', draw, { passive: false });
-  canvas.addEventListener('touchend', stopDraw);
-}
-
-function convertHexToRGBA(hex, alpha){
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return rgba(${r}, ${g}, ${b}, ${alpha});
-}
-
-function clearAllDrawings(){
-  const canvases = document.querySelectorAll('.drawing-canvas');
-  canvases.forEach(canvas => {
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  });
-  showToast(state.lang === 'ar' ? 'تم مسح كافة الرسومات' : 'All drawings cleared');
-}
 
 function closeReader(){
   document.getElementById('readerOverlay').hidden = true;
   pdfInstance = null;
 }
-[7/13/2026 1:42 PM] ❀: function showToast(msg){
+
+/* ---------- اتجاه التمرير: عمودي (أعلى/أسفل) أو أفقي (يمين/يسار) حسب اختيار المستخدم ---------- */
+function toggleReaderDirection(){
+  readerState.direction = readerState.direction === 'vertical' ? 'horizontal' : 'vertical';
+  const wrap = document.getElementById('readerCanvasWrap');
+  const container = document.getElementById('readerPagesContainer');
+  if(readerState.direction === 'horizontal'){
+    wrap.style.overflowX = 'auto'; wrap.style.overflowY = 'hidden';
+    container.classList.add('horizontal');
+    document.getElementById('dirToggleBtn').textContent = '↔️';
+  } else {
+    wrap.style.overflowX = 'hidden'; wrap.style.overflowY = 'auto';
+    container.classList.remove('horizontal');
+    document.getElementById('dirToggleBtn').textContent = '↕️';
+  }
+}
+
+/* ---------- تكبير/تصغير الكتاب ---------- */
+function zoomReader(delta){
+  readerState.zoom = Math.min(3, Math.max(0.5, +(readerState.zoom + delta).toFixed(2)));
+  const container = document.getElementById('readerPagesContainer');
+  container.style.zoom = readerState.zoom; // يحافظ على أبعاد التمرير الصحيحة أثناء التكبير
+  document.getElementById('zoomLabel').textContent = Math.round(readerState.zoom * 100) + '%';
+}
+
+/* ---------- أدوات الرسم والتظليل (هايلايت) فوق صفحات الكتاب ---------- */
+function toggleDrawPanel(){
+  drawState.mode = !drawState.mode;
+  document.getElementById('drawToolbar').hidden = !drawState.mode;
+  document.getElementById('drawToggleBtn').classList.toggle('active', drawState.mode);
+  document.querySelectorAll('.draw-canvas').forEach(c=>{
+    c.style.pointerEvents = drawState.mode ? 'auto' : 'none';
+    c.style.touchAction = drawState.mode ? 'none' : 'auto';
+  });
+}
+function setDrawTool(tool){
+  drawState.tool = tool;
+  document.getElementById('toolPenBtn').classList.toggle('active', tool==='pen');
+  document.getElementById('toolHighlightBtn').classList.toggle('active', tool==='highlighter');
+}
+function setDrawColor(v){ drawState.color = v; }
+function setDrawSize(v){ drawState.size = parseInt(v, 10); }
+
+function getPointerPos(canvas, evt){
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  return { x: (evt.clientX - rect.left) * scaleX, y: (evt.clientY - rect.top) * scaleY };
+}
+
+function attachDrawEvents(canvas){
+  canvas.addEventListener('pointerdown', (e)=>{
+    if(!drawState.mode) return;
+    drawState.drawing = true; drawState.activeCanvas = canvas;
+    try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
+    const pos = getPointerPos(canvas, e);
+    drawState.lastX = pos.x; drawState.lastY = pos.y;
+    // نقطة بسيطة عند مجرد الضغط بدون تحريك
+    const ctx = canvas.getContext('2d');
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    if(drawState.tool === 'highlighter'){
+      ctx.globalAlpha = 0.35; ctx.globalCompositeOperation = 'multiply'; ctx.lineWidth = drawState.size * 4;
+    } else {
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.lineWidth = drawState.size;
+    }
+    ctx.strokeStyle = drawState.color;
+    ctx.beginPath(); ctx.moveTo(pos.x, pos.y); ctx.lineTo(pos.x + 0.01, pos.y + 0.01); ctx.stroke();
+  });
+  canvas.addEventListener('pointermove', (e)=>{
+    if(!drawState.mode || !drawState.drawing || drawState.activeCanvas !== canvas) return;
+    const pos = getPointerPos(canvas, e);
+    const ctx = canvas.getContext('2d');
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    if(drawState.tool === 'highlighter'){
+      ctx.globalAlpha = 0.35; ctx.globalCompositeOperation = 'multiply'; ctx.lineWidth = drawState.size * 4;
+    } else {
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.lineWidth = drawState.size;
+    }
+    ctx.strokeStyle = drawState.color;
+    ctx.beginPath(); ctx.moveTo(drawState.lastX, drawState.lastY); ctx.lineTo(pos.x, pos.y); ctx.stroke();
+    drawState.lastX = pos.x; drawState.lastY = pos.y;
+  });
+  const endDraw = ()=>{ drawState.drawing = false; drawState.activeCanvas = null; };
+  canvas.addEventListener('pointerup', endDraw);
+  canvas.addEventListener('pointercancel', endDraw);
+  canvas.addEventListener('pointerleave', endDraw);
+}
+
+function clearAllDrawings(){
+  document.querySelectorAll('.draw-canvas').forEach(c=>{
+    c.getContext('2d').clearRect(0, 0, c.width, c.height);
+  });
+}
+
+function showToast(msg){
   const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show');
   clearTimeout(window._toastTimer); window._toastTimer = setTimeout(()=> el.classList.remove('show'), 1800);
 }
@@ -1195,9 +1099,9 @@ function switchDrawerTab(tab){ state.drawerTab = tab; renderDrawerList(); }
 function renderDrawerList(){
   const container = document.getElementById('drawerListContainer');
   const ids = state.drawerTab === 'fav' ? [...state.favorites] : [...state.history];
-  if(!ids.length){ container.innerHTML = <div class="drawer-empty">فارغة حالياً</div>; return; }
+  if(!ids.length){ container.innerHTML = `<div class="drawer-empty">فارغة حالياً</div>`; return; }
   container.innerHTML = ids.map(id=>{
-    const b = BOOKS.find(x=>String(x.id)===String(id)); return b ? <div class="drawer-list-item"><span>${b.title[state.lang]}</span></div> : '';
+    const b = BOOKS.find(x=>String(x.id)===String(id)); return b ? `<div class="drawer-list-item"><span>${b.title[state.lang]}</span></div>` : '';
   }).join('');
 }
 
