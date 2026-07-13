@@ -232,7 +232,7 @@
     height: 100%; width: 0%; transition: width 0.1s ease;
   }
 
-  /* ---------- قارئ متطور: يدعم التمرير العمودي/الأفقي + تكبير/تصغير + رسم وهايلايت ---------- */
+  /* ---------- قارئ بتمرير عمودي متصل (مثل الكتب الإلكترونية الحقيقية) + تكبير/تصغير + رسم وهايلايت ---------- */
   .reader-overlay{position:fixed; inset:0; background:var(--bg); z-index:50; display:flex; flex-direction:column;}
   .reader-overlay[hidden]{display:none;}
   .reader-topbar{background:var(--bg-elevated); border-bottom:1px solid var(--border); padding:10px 14px;
@@ -265,10 +265,9 @@
   .draw-toolbar input[type="range"]{width:90px; accent-color:var(--accent);}
   .draw-size-label{font-size:11px; color:var(--muted); white-space:nowrap;}
 
-  /* الحاوية تسمح بالتمرير العمودي أو الأفقي حسب اختيار المستخدم */
+  /* الحاوية الآن تمرير عمودي دائمًا فقط (كل الصفحات تحت بعضها بالتتابع) */
   .reader-canvas-wrap{flex:1; overflow-y:auto; overflow-x:hidden; padding:20px 10px 90px; scroll-behavior: smooth;}
   .reader-pages-container { display:flex; flex-direction:column; gap:20px; align-items:center; width:100%; }
-  .reader-pages-container.horizontal { flex-direction:row; align-items:flex-start; width:max-content; padding-inline-end:20px; }
 
   .page-container {
     box-shadow: 0 5px 20px rgba(0,0,0,0.15); border-radius: 6px; 
@@ -453,13 +452,12 @@
       </div>
     </div>
 
-    <!-- READER (تمرير عمودي/أفقي قابل للاختيار + تكبير/تصغير + رسم وهايلايت) -->
+    <!-- READER (تمرير عمودي متصل فقط + تكبير/تصغير + رسم وهايلايت) -->
     <div class="reader-overlay" id="readerOverlay" hidden>
       <div class="reader-topbar">
         <button class="reader-back" onclick="closeReader()">✕</button>
         <div class="rt-side" id="readerBookTitle">—</div>
         <div class="reader-tools-group">
-          <button class="reader-tool-btn" id="dirToggleBtn" onclick="toggleReaderDirection()" title="اتجاه التمرير">↕️</button>
           <button class="reader-tool-btn" onclick="zoomReader(-0.1)" title="تصغير">－</button>
           <span class="zoom-label" id="zoomLabel">100%</span>
           <button class="reader-tool-btn" onclick="zoomReader(0.1)" title="تكبير">＋</button>
@@ -477,7 +475,7 @@
       </div>
       <div class="reader-canvas-wrap" id="readerCanvasWrap">
         <div class="reader-pages-container" id="readerPagesContainer">
-          <!-- سيتم توليد الصفحات هنا تلقائياً حسب الاتجاه المختار -->
+          <!-- سيتم توليد الصفحات هنا تلقائياً، كل الصفحات تحت بعضها بتمرير عمودي متصل -->
         </div>
       </div>
     </div>
@@ -841,15 +839,15 @@ async function toggleRead(id){
 }
 
 /* =========================================================================
-   القارئ: تحميل مسبق كامل + اتجاه تمرير قابل للاختيار + تكبير/تصغير + رسم وهايلايت
+   القارئ: تحميل مسبق كامل (Blob) + تمرير عمودي متصل فقط + تكبير/تصغير + رسم وهايلايت
    ========================================================================= */
 let pdfInstance = null;
 if(typeof pdfjsLib !== 'undefined'){
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 }
 
-// حالة اتجاه القارئ والتكبير
-let readerState = { direction:'vertical', zoom:1 };
+// حالة التكبير في القارئ
+let readerState = { zoom:1 };
 // حالة أدوات الرسم/الهايلايت
 let drawState = { mode:false, tool:'pen', color:'#e53e3e', size:4, drawing:false, lastX:0, lastY:0, activeCanvas:null };
 
@@ -906,10 +904,7 @@ async function readBook(id){
     const container = document.getElementById('readerPagesContainer');
     container.innerHTML = ''; // تصفية القارئ القديم
 
-    // ضبط اتجاه الحاوية الافتراضي (عمودي) عند كل فتح لكتاب جديد
-    readerState.direction = 'vertical';
-    container.classList.remove('horizontal');
-    document.getElementById('dirToggleBtn').textContent = '↕️';
+    // القارئ الآن يعرض جميع الصفحات بالتتابع بتمرير عمودي واحد فقط (مثل الكتب الإلكترونية الحقيقية)
     const wrap = document.getElementById('readerCanvasWrap');
     wrap.style.overflowX = 'hidden'; wrap.style.overflowY = 'auto';
     container.style.zoom = 1;
@@ -962,15 +957,12 @@ async function readBook(id){
     if(CONFIGURED) supabaseClient.rpc('increment_book_views', { p_book_id: id }).then(()=>{});
     if(!state.history.has(id)){ toggleRead(id); }
 
-    // إضافة مراقب لتحديث رقم الصفحة الحالية أثناء التمرير (عمودي أو أفقي)
+    // مراقب لتحديث رقم الصفحة الحالية أثناء التمرير العمودي
     wrap.onscroll = () => {
       const children = container.children;
       for (let child of children) {
         const rect = child.getBoundingClientRect();
-        const wrapRect = wrap.getBoundingClientRect();
-        const inView = readerState.direction === 'horizontal'
-          ? (rect.left >= wrapRect.left - 20 && rect.left <= wrapRect.left + wrapRect.width / 2)
-          : (rect.top >= 0 && rect.top <= window.innerHeight / 2);
+        const inView = (rect.top >= 0 && rect.top <= window.innerHeight / 2);
         if (inView) {
           document.getElementById('readerPageNum').textContent = t('pageOf')(child.dataset.page, totalPages);
           break;
@@ -988,22 +980,6 @@ async function readBook(id){
 function closeReader(){
   document.getElementById('readerOverlay').hidden = true;
   pdfInstance = null;
-}
-
-/* ---------- اتجاه التمرير: عمودي (أعلى/أسفل) أو أفقي (يمين/يسار) حسب اختيار المستخدم ---------- */
-function toggleReaderDirection(){
-  readerState.direction = readerState.direction === 'vertical' ? 'horizontal' : 'vertical';
-  const wrap = document.getElementById('readerCanvasWrap');
-  const container = document.getElementById('readerPagesContainer');
-  if(readerState.direction === 'horizontal'){
-    wrap.style.overflowX = 'auto'; wrap.style.overflowY = 'hidden';
-    container.classList.add('horizontal');
-    document.getElementById('dirToggleBtn').textContent = '↔️';
-  } else {
-    wrap.style.overflowX = 'hidden'; wrap.style.overflowY = 'auto';
-    container.classList.remove('horizontal');
-    document.getElementById('dirToggleBtn').textContent = '↕️';
-  }
 }
 
 /* ---------- تكبير/تصغير الكتاب ---------- */
