@@ -839,16 +839,16 @@ async function toggleRead(id){
 }
 
 /* =========================================================================
-   القارئ: تحميل مسبق كامل (Blob) + تمرير عمودي متصل فقط + تكبير/تصغير + رسم وهايلايت
+   القارئ: تحميل مسبق كامل (Blob) + تمرير عمودي متصل فقط + تكبير حاد الوضوح (إعادة رسم حقيقية) + رسم وهايلايت
    ========================================================================= */
 let pdfInstance = null;
 if(typeof pdfjsLib !== 'undefined'){
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 }
 
-// حالة التكبير في القارئ
 let readerState = { zoom:1 };
-// حالة أدوات الرسم/الهايلايت
+let pdfPagesMeta = []; // { pageNum, baseScale, unscaledWidth, unscaledHeight, canvasEl }
+let zoomRenderTimer = null;
 let drawState = { mode:false, tool:'pen', color:'#e53e3e', size:4, drawing:false, lastX:0, lastY:0, activeCanvas:null };
 
 async function readBook(id){
@@ -858,14 +858,12 @@ async function readBook(id){
   closeModal();
   state.currentPdfBookId = id;
 
-  // إعادة ضبط إعدادات القارئ عند فتح كتاب جديد
   readerState.zoom = 1;
   drawState.mode = false; drawState.drawing = false; drawState.activeCanvas = null;
   document.getElementById('zoomLabel').textContent = '100%';
   document.getElementById('drawToolbar').hidden = true;
   document.getElementById('drawToggleBtn').classList.remove('active');
   
-  // 1. إظهار واجهة التحميل المسبق الكامل للملف لمنع الخروج أو الانهيار
   const dlOverlay = document.getElementById('downloadOverlay');
   const dlProgress = document.getElementById('downloadProgress');
   const dlPercentage = document.getElementById('downloadPercentage');
@@ -875,7 +873,6 @@ async function readBook(id){
   dlPercentage.textContent = '0%';
   
   try {
-    // تحميل الملف كـ Blob عبر نظام XHR لمتابعة النسبة المئوية للتحميل بدقة
     const response = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('GET', book.pdfUrl, true);
@@ -897,28 +894,27 @@ async function readBook(id){
       xhr.send();
     });
 
-    // تحويل الـ Blob المحمل بالكامل إلى ArrayBuffer تمهيداً لعرضه محلياً داخل التطبيق
     const arrayBuffer = await response.arrayBuffer();
     
     document.getElementById('readerBookTitle').textContent = book.title[state.lang];
     const container = document.getElementById('readerPagesContainer');
-    container.innerHTML = ''; // تصفية القارئ القديم
+    container.innerHTML = '';
 
-    // القارئ الآن يعرض جميع الصفحات بالتتابع بتمرير عمودي واحد فقط (مثل الكتب الإلكترونية الحقيقية)
     const wrap = document.getElementById('readerCanvasWrap');
     wrap.style.overflowX = 'hidden'; wrap.style.overflowY = 'auto';
     container.style.zoom = 1;
     
-    // تحميل وثيقة الـ PDF من الذاكرة المحلية مباشرة بدون أي استهلاك إضافي للإنترنت
     pdfInstance = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    dlOverlay.hidden = true; // إخفاء واجهة التحميل فور نجاح العملية
+    dlOverlay.hidden = true;
     document.getElementById('readerOverlay').hidden = false;
     
     document.getElementById('readerPageNum').textContent = t('loading');
     
-    // 2. معالجة ورسم كافة صفحات الكتاب مع طبقة رسم/تظليل شفافة فوق كل صفحة
+    // معالجة ورسم كافة صفحات الكتاب بدقة عالية (تراعي كثافة بكسل الشاشة) مع طبقة رسم/تظليل شفافة فوق كل صفحة
     const totalPages = pdfInstance.numPages;
     const availableWidth = wrap.clientWidth - 20;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    pdfPagesMeta = [];
 
     for (let i = 1; i <= totalPages; i++) {
       const pageContainer = document.createElement('div');
@@ -931,16 +927,20 @@ async function readBook(id){
 
       const page = await pdfInstance.getPage(i);
       const unscaledViewport = page.getViewport({ scale: 1 });
-      const scale = Math.min(2.0, availableWidth / unscaledViewport.width);
-      const viewport = page.getViewport({ scale: scale });
+      const baseScale = Math.min(2.0, availableWidth / unscaledViewport.width);
+      const renderScale = baseScale * dpr;
+      const viewport = page.getViewport({ scale: renderScale });
       
       canvas.width = viewport.width;
       canvas.height = viewport.height;
+      canvas.style.width = (baseScale * unscaledViewport.width) + 'px';
+      canvas.style.height = (baseScale * unscaledViewport.height) + 'px';
       
       const ctx = canvas.getContext('2d');
       await page.render({ canvasContext: ctx, viewport: viewport }).promise;
 
-      // طبقة رسم/هايلايت شفافة فوق الصفحة بنفس أبعادها
+      pdfPagesMeta.push({ pageNum:i, baseScale, unscaledWidth:unscaledViewport.width, unscaledHeight:unscaledViewport.height, canvasEl:canvas });
+
       const drawCanvas = document.createElement('canvas');
       drawCanvas.className = 'draw-canvas';
       drawCanvas.width = viewport.width;
@@ -957,7 +957,6 @@ async function readBook(id){
     if(CONFIGURED) supabaseClient.rpc('increment_book_views', { p_book_id: id }).then(()=>{});
     if(!state.history.has(id)){ toggleRead(id); }
 
-    // مراقب لتحديث رقم الصفحة الحالية أثناء التمرير العمودي
     wrap.onscroll = () => {
       const children = container.children;
       for (let child of children) {
@@ -980,14 +979,32 @@ async function readBook(id){
 function closeReader(){
   document.getElementById('readerOverlay').hidden = true;
   pdfInstance = null;
+  pdfPagesMeta = [];
 }
 
-/* ---------- تكبير/تصغير الكتاب ---------- */
+/* ---------- تكبير/تصغير مع إعادة رسم حقيقية من ملف الـ PDF (بدون تغويش) ---------- */
 function zoomReader(delta){
   readerState.zoom = Math.min(3, Math.max(0.5, +(readerState.zoom + delta).toFixed(2)));
-  const container = document.getElementById('readerPagesContainer');
-  container.style.zoom = readerState.zoom; // يحافظ على أبعاد التمرير الصحيحة أثناء التكبير
   document.getElementById('zoomLabel').textContent = Math.round(readerState.zoom * 100) + '%';
+  clearTimeout(zoomRenderTimer);
+  zoomRenderTimer = setTimeout(renderPagesAtCurrentZoom, 150);
+}
+
+async function renderPagesAtCurrentZoom(){
+  if(!pdfInstance) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+  for(const meta of pdfPagesMeta){
+    const page = await pdfInstance.getPage(meta.pageNum);
+    const renderScale = meta.baseScale * readerState.zoom * dpr;
+    const viewport = page.getViewport({ scale: renderScale });
+    const canvas = meta.canvasEl;
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    canvas.style.width = (meta.baseScale * readerState.zoom * meta.unscaledWidth) + 'px';
+    canvas.style.height = (meta.baseScale * readerState.zoom * meta.unscaledHeight) + 'px';
+    const ctx = canvas.getContext('2d');
+    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+  }
 }
 
 /* ---------- أدوات الرسم والتظليل (هايلايت) فوق صفحات الكتاب ---------- */
@@ -1022,7 +1039,6 @@ function attachDrawEvents(canvas){
     try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
     const pos = getPointerPos(canvas, e);
     drawState.lastX = pos.x; drawState.lastY = pos.y;
-    // نقطة بسيطة عند مجرد الضغط بدون تحريك
     const ctx = canvas.getContext('2d');
     ctx.lineJoin = 'round'; ctx.lineCap = 'round';
     if(drawState.tool === 'highlighter'){
