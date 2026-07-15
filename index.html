@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&family=Lora:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<!-- تم تحديث رابط المكتبة لإصدار مستقر يدعم التحميل الكامل -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 
@@ -47,55 +46,6 @@
     opacity:.9;
   }
   .ribbon.thin{height:4px;}
-
-  #loginScreen{
-    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
-    background: radial-gradient(circle at 30% 15%, var(--accent-soft), var(--bg) 62%);
-  }
-  .login-card{
-    width:100%; max-width:400px; background:var(--bg-elevated); border:1px solid var(--border);
-    border-radius: 20px; padding:0 0 30px; box-shadow:var(--shadow); text-align:center; overflow:hidden;
-  }
-  .login-emblem{
-    width:60px; height:60px; margin:26px auto 14px; border-radius:50%;
-    background:linear-gradient(160deg, var(--accent), var(--accent-2));
-    display:flex; align-items:center; justify-content:center; color:var(--bg-elevated); font-size:28px;
-  }
-  .login-body{padding:0 28px;}
-  .login-card h1{font-size:23px; margin:0 0 6px; line-height:1.5;}
-  .login-card p.sub{color:var(--muted); font-size:13.5px; margin:0 0 24px;}
-  .authTabs{display:flex; gap:6px; background:var(--bg); border-radius:10px; padding:4px; margin-bottom:18px;}
-  .authTabBtn{flex:1; border:none; background:none; padding:9px; border-radius:8px; cursor:pointer; font-size:13.5px; color:var(--muted); font-family:inherit;}
-  .authTabBtn.active{background:var(--bg-elevated); color:var(--text); font-weight:700; box-shadow:0 1px 5px rgba(0,0,0,.08);}
-  .field{text-align:start; margin-bottom:12px;}
-  .field label{display:block; font-size:12.5px; color:var(--muted); margin-bottom:5px;}
-  .field input{
-    width:100%; padding:11px 13px; border-radius:10px; border:1px solid var(--border); background:var(--bg);
-    color:var(--text); font-family:inherit; font-size:14px;
-  }
-  .field input:focus, .btn:focus-visible, .chip:focus-visible, .icon-btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
-  .btn{
-    width:100%; padding:12px 16px; border-radius:10px; border:1px solid var(--border); background:var(--bg-elevated);
-    color:var(--text); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;
-    margin-bottom:10px; font-family:inherit; transition:transform .12s, background .2s;
-  }
-  .btn:hover{transform:translateY(-1px); background:var(--accent-soft);}
-  .btn.primary{background:linear-gradient(160deg, var(--accent), var(--accent-2)); color:var(--bg-elevated); border-color:transparent; font-weight:700;}
-  .btn.primary:hover{filter:brightness(1.06);}
-  .btn:disabled{opacity:.6; cursor:default; transform:none;}
-  .divider-text{color:var(--muted); font-size:12px; margin:14px 0; display:flex; align-items:center; gap:10px;}
-  .divider-text::before, .divider-text::after{content:""; flex:1; height:1px; background:var(--border);}
-  .guest-link{background:none; border:none; color:var(--muted); text-decoration:underline; cursor:pointer; font-size:13px; font-family:inherit;}
-  .authMsg{font-size:12.5px; padding:9px 12px; border-radius:8px; margin-bottom:12px; text-align:start; display:none;}
-  .authMsg.show{display:block;}
-  .authMsg.err{background:#F4D9D3; color:#7B2D26;}
-  .authMsg.ok{background:#DCEEE6; color:#0F5C4E;}
-  .spinner{width:16px; height:16px; border-radius:50%; border:2px solid rgba(255,255,255,.4); border-top-color:currentColor; animation:spin .7s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-
-  .config-warning{
-    font-size:11.5px; background:var(--accent-soft); color:var(--text); border-radius:10px; padding:10px 12px; margin:16px 28px 0; text-align:start; line-height:1.7;
-  }
 
   .topbar{
     display:flex; align-items:center; justify-content:space-between; padding:14px 18px;
@@ -196,7 +146,16 @@
   .drawer-empty{color:var(--muted); font-size:13px; text-align:center; padding:26px 0;}
   .drawer-section{margin-top:22px; padding-top:14px; border-top:1px solid var(--border);}
   .drawer-section h4{margin:0 0 10px; font-size:13px; color:var(--muted); font-weight:700;}
-  .logout-btn{width:100%; margin-top:20px; padding:10px; border-radius:10px; border:1px solid var(--border); background:none; color:var(--accent); cursor:pointer; font-family:inherit; font-weight:600;}
+  .btn{
+    width:100%; padding:12px 16px; border-radius:10px; border:1px solid var(--border); background:var(--bg-elevated);
+    color:var(--text); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;
+    margin-bottom:10px; font-family:inherit; transition:transform .12s, background .2s;
+  }
+  .btn:hover{transform:translateY(-1px); background:var(--accent-soft);}
+  .btn.primary{background:linear-gradient(160deg, var(--accent), var(--accent-2)); color:var(--bg-elevated); border-color:transparent; font-weight:700;}
+  .btn.primary:hover{filter:brightness(1.06);}
+  .btn:disabled{opacity:.6; cursor:default; transform:none;}
+  .danger-btn{width:100%; margin-top:20px; padding:10px; border-radius:10px; border:1px solid var(--border); background:none; color:#B94A3A; cursor:pointer; font-family:inherit; font-weight:600;}
   .close-drawer{float:inline-end; border:none; background:none; font-size:18px; cursor:pointer; color:var(--muted);}
 
   .modal-overlay{position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:40; display:flex; align-items:center; justify-content:center; padding:20px;}
@@ -210,7 +169,7 @@
   .modal-actions{display:flex; flex-direction:column; gap:8px;}
   .modal-actions .btn{margin-bottom:0;}
   .rating-row{display:flex; align-items:center; justify-content:center; gap:4px; margin:4px 0 18px;}
-  .rating-row .star{font-size:24px; cursor:pointer; color:var(--border); transition:color .15s;}
+  .rating-row .star{font-size:24px; color:var(--border);}
   .rating-row .star.filled{color:var(--accent-2);}
   .rating-row .rating-summary{color:var(--muted); font-size:12px; margin-inline-start:8px;}
 
@@ -232,7 +191,7 @@
     height: 100%; width: 0%; transition: width 0.1s ease;
   }
 
-  /* ---------- قارئ بتمرير عمودي متصل (مثل الكتب الإلكترونية الحقيقية) + تكبير/تصغير + رسم وهايلايت ---------- */
+  /* ---------- قارئ بتمرير عمودي متصل + تكبير/تصغير + رسم وهايلايت ---------- */
   .reader-overlay{position:fixed; inset:0; background:var(--bg); z-index:50; display:flex; flex-direction:column;}
   .reader-overlay[hidden]{display:none;}
   .reader-topbar{background:var(--bg-elevated); border-bottom:1px solid var(--border); padding:10px 14px;
@@ -265,7 +224,6 @@
   .draw-toolbar input[type="range"]{width:90px; accent-color:var(--accent);}
   .draw-size-label{font-size:11px; color:var(--muted); white-space:nowrap;}
 
-  /* الحاوية الآن تمرير عمودي دائمًا فقط (كل الصفحات تحت بعضها بالتتابع) */
   .reader-canvas-wrap{flex:1; overflow-y:auto; overflow-x:hidden; padding:20px 10px 90px; scroll-behavior: smooth;}
   .reader-pages-container { display:flex; flex-direction:column; gap:20px; align-items:center; width:100%; }
 
@@ -290,19 +248,8 @@
 <div class="ribbon"></div>
 <div id="app">
 
-  <!-- LOGIN / SIGNUP SCREEN -->
-  <div id="loginScreen">
-    <div class="login-card">
-      <div class="login-emblem">📖</div>
-      <div class="login-body">
-        <h1 class="display" data-t="appName">مكتبة إمام المتقين</h1>
-        <p class="sub" data-t="loginSubtitle">مكتبتك العربية للقراءة والاكتشاف</p>
-
-       
-
-       
-  <!-- MAIN APP -->
-  <div id="mainApp" hidden>
+  <!-- MAIN APP (يفتح مباشرة بدون تسجيل دخول) -->
+  <div id="mainApp">
     <header class="topbar">
       <div class="brand">
         <div class="brand-mark">📚</div>
@@ -315,7 +262,7 @@
           <option value="night" data-t="themeNight">داكن</option>
         </select>
         <button class="icon-btn" onclick="toggleLang()" id="langBtn">EN</button>
-        <button class="avatar-btn" id="avatarBtn" onclick="openDrawer()">?</button>
+        <button class="avatar-btn" id="avatarBtn" onclick="openDrawer()">👤</button>
       </div>
     </header>
 
@@ -371,7 +318,7 @@
     <aside class="drawer" id="profileDrawer" hidden>
       <button class="close-drawer" onclick="closeDrawer()">✕</button>
       <div class="drawer-profile">
-        <div class="drawer-avatar" id="drawerAvatar">?</div>
+        <div class="drawer-avatar" id="drawerAvatar">👤</div>
         <div>
           <div class="drawer-name" id="drawerName">—</div>
           <div class="drawer-sub" id="drawerSub">—</div>
@@ -388,7 +335,7 @@
         <button class="btn" onclick="toggleLang()"><span data-t="switchLangBtn">التبديل إلى English</span></button>
       </div>
 
-      <button class="logout-btn" onclick="logout()" data-t="logoutBtn">تسجيل الخروج</button>
+      <button class="danger-btn" onclick="resetLocalData()" data-t="resetDataBtn">مسح كل البيانات المحفوظة على هذا الجهاز</button>
     </aside>
 
     <!-- BOOK MODAL -->
@@ -407,7 +354,7 @@
       </div>
     </div>
 
-    <!-- READER (تمرير عمودي متصل فقط + تكبير/تصغير + رسم وهايلايت) -->
+    <!-- READER -->
     <div class="reader-overlay" id="readerOverlay" hidden>
       <div class="reader-topbar">
         <button class="reader-back" onclick="closeReader()">✕</button>
@@ -429,9 +376,7 @@
         <button class="draw-tool-chip" onclick="clearAllDrawings()">🗑 مسح الكل</button>
       </div>
       <div class="reader-canvas-wrap" id="readerCanvasWrap">
-        <div class="reader-pages-container" id="readerPagesContainer">
-          <!-- سيتم توليد الصفحات هنا تلقائياً، كل الصفحات تحت بعضها بتمرير عمودي متصل -->
-        </div>
+        <div class="reader-pages-container" id="readerPagesContainer"></div>
       </div>
     </div>
 
@@ -441,7 +386,7 @@
 
 <script>
 /* =========================================================================
-   إعدادات الاتصال بـ Supabase
+   إعدادات الاتصال بـ Supabase (تُستخدم فقط لجلب الكتب/الأذكار العامة، لا حسابات مستخدمين)
    ========================================================================= */
 const SUPABASE_URL = 'https://nshuwvmaidlagypifyde.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_nUbqTqIfATYfIZSPC8auFg_5ubR5cJ6';
@@ -449,10 +394,13 @@ const SUPABASE_ANON_KEY = 'sb_publishable_nUbqTqIfATYfIZSPC8auFg_5ubR5cJ6';
 const CONFIGURED = SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length > 20;
 let supabaseClient = null;
 if(CONFIGURED){
-  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} else {
-  document.getElementById('configWarning').hidden = false;
-  document.getElementById('configWarning').textContent = 'لم يتم الربط بقاعدة بيانات بعد.';
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+      persistSession: true,      // الافتراضي: يبقي المستخدم مسجلاً بعد إغلاق الصفحة
+      autoRefreshToken: true,    // يجدد الجلسة تلقائيًا قبل انتهائها
+      detectSessionInUrl: true   // يلتقط الجلسة من الرابط بعد تسجيل الدخول عبر Google
+    }
+  });
 }
 
 const CATEGORIES = [
@@ -470,152 +418,95 @@ let RATINGS = [];
 
 const I18N = {
   ar:{
-    appName:'مكتبة إمام المتقين', loginSubtitle:'مكتبتك العربية للقراءة والاكتشاف',
-    loginTab:'تسجيل الدخول', signupTab:'حساب جديد',
-    emailLabel:'البريد الإلكتروني', passwordLabel:'كلمة المرور', nameLabel:'الاسم',
-    loginBtn:'تسجيل الدخول', signupBtn:'إنشاء حساب', forgotPassword:'نسيت كلمة المرور؟',
-    continueGoogle:'المتابعة عبر Google', or:'أو', continueGuest:'تصفح كضيف بدون حساب',
+    appName:'مكتبة إمام المتقين',
     themePaper:'فاتح', themeSepia:'ورقي', themeNight:'داكن',
     homeTitle:'اختيارات لك اليوم',
     searchTitle:'البحث في المكتبة', searchPlaceholder:'ابحث عن كتاب أو مؤلف...', categoriesLabel:'التصنيفات',
     navHome:'الرئيسية', navSearch:'البحث', navAdhkar:'الأذكار',
     adhkarTitle:'أذكار أهل البيت', adhkarSub:'أذكار وأدعية مختارة، تُضاف من لوحة تحكم المدير',
-    emptyAdhkar:'أذكار أهل البيت فارغة حاليًا', emptyAdhkarDesc:'أضف أذكارًا من لوحة تحكم المدير لتظهر هنا فورًا لجميع المستخدمين.',
+    emptyAdhkar:'أذكار أهل البيت فارغة حاليًا',
     favoritesTab:'المفضلة', historyTab:'سجل القراءة', settingsLabel:'الإعدادات',
-    switchLangBtn:'التبديل إلى English', logoutBtn:'تسجيل الخروج',
+    switchLangBtn:'التبديل إلى English', resetDataBtn:'مسح كل البيانات المحفوظة على هذا الجهاز',
     by:'تأليف', addFav:'➕ أضف إلى المفضلة', removeFav:'✓ في المفضلة', markRead:'📖 وضع علامة مقروء', markedRead:'✓ تمت قراءته',
-    emptyFav:'لا توجد كتب في المفضلة بعد. أضف كتابًا من المكتبة!', emptyHist:'لم تُسجَّل قراءة أي كتاب بعد.',
-    noResults:'لا توجد نتائج مطابقة', guestName:'ضيف', guestSub:'وضع الضيف — محفوظ محليًا على هذا الجهاز فقط',
+    noResults:'لا توجد نتائج مطابقة', visitorName:'زائر', visitorSub:'بياناتك محفوظة تلقائيًا على هذا الجهاز',
     readBtn:'📖 قراءة الكتاب', noPdfMsg:'لم تتم إضافة نسخة القراءة لهذا الكتاب بعد',
     emptyLibrary:'المكتبة فارغة حاليًا', emptyLibraryDesc:'أضف كتبًا من لوحة تحكم المدير لتظهر هنا فورًا لجميع المستخدمين.',
-    notConnected:'لم يتم الاتصال بقاعدة البيانات بعد', notConnectedDesc:'أضف بيانات Supabase أعلى ملف الكود لتفعيل الحسابات والكتب.',
     loading:'جارِ التحميل واستخراج الصفحات...', pdfLoadError:'تعذّر تحميل الكتاب، تحقق من اتصالك بالإنترنت',
-    pageOf:(n,total)=>`صفحة ${n} من ${total}`, tapToRetry:'اضغط لإعادة المحاولة',
-    errInvalidCreds:'البريد الإلكتروني أو كلمة المرور غير صحيحة', errEmailTaken:'هذا البريد مستخدم بالفعل',
-    errGeneric:'حدث خطأ، حاول مرة أخرى', errWeakPass:'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
-    checkEmailMsg:'تم إرسال رابط تأكيد إلى بريدك الإلكتروني', resetSentMsg:'تم إرسال رابط استعادة كلمة المرور إلى بريدك',
-    needAccountMsg:'سجّل دخولك لحفظ المفضلة وسجل القراءة',
+    pageOf:(n,total)=>`صفحة ${n} من ${total}`,
     drawSizeLabel:'الحجم',
+    confirmReset:'سيتم حذف المفضلة وسجل القراءة والرسومات المحفوظة على هذا الجهاز بشكل نهائي. متابعة؟',
   },
   en:{
-    appName:'Imam Al-Muttaqin Library', loginSubtitle:'Your Arabic library for reading and discovery',
-    loginTab:'Log in', signupTab:'Create account',
-    emailLabel:'Email', passwordLabel:'Password', nameLabel:'Name',
-    loginBtn:'Log in', signupBtn:'Create account', forgotPassword:'Forgot password?',
-    continueGoogle:'Continue with Google', or:'or', continueGuest:'Browse as guest',
+    appName:'Imam Al-Muttaqin Library',
     themePaper:'Light', themeSepia:'Sepia', themeNight:'Dark',
     homeTitle:'Picked for you today',
     searchTitle:'Search the library', searchPlaceholder:'Search for a book or author...', categoriesLabel:'Categories',
     navHome:'Home', navSearch:'Search', navAdhkar:'Adhkar',
     adhkarTitle:'Ahlul Bayt Adhkar', adhkarSub:'Selected supplications and remembrances, added from the admin dashboard',
-    emptyAdhkar:'No adhkar added yet', emptyAdhkarDesc:'Add adhkar from the admin dashboard and they will appear here instantly for every user.',
+    emptyAdhkar:'No adhkar added yet',
     favoritesTab:'Favorites', historyTab:'Reading history', settingsLabel:'Settings',
-    switchLangBtn:'Switch to العربية', logoutBtn:'Log out',
+    switchLangBtn:'Switch to العربية', resetDataBtn:'Clear all data saved on this device',
     by:'by', addFav:'➕ Add to favorites', removeFav:'✓ In favorites', markRead:'📖 Mark as read', markedRead:'✓ Read',
-    emptyFav:'No favorites yet. Add a book from the library!', emptyHist:'No books marked as read yet.',
-    noResults:'No matching results', guestName:'Guest', guestSub:'Guest mode — saved locally on this device only',
+    noResults:'No matching results', visitorName:'Visitor', visitorSub:'Your data is saved automatically on this device',
     readBtn:'📖 Read book', noPdfMsg:'This book has no reading copy uploaded yet',
     emptyLibrary:'The library is empty right now', emptyLibraryDesc:'Add books from the admin dashboard and they will appear here instantly for every user.',
-    notConnected:'Not connected to a database yet', notConnectedDesc:'Add your Supabase credentials at the top of the code to enable accounts and books.',
     loading:'Loading & rendering pages...', pdfLoadError:'Could not load the book, check your connection',
-    pageOf:(n,total)=>`Page ${n} of ${total}`, tapToRetry:'Tap to retry',
-    errInvalidCreds:'Incorrect email or password', errEmailTaken:'This email is already registered',
-    errGeneric:'Something went wrong, please try again', errWeakPass:'Password must be at least 6 characters',
-    checkEmailMsg:'A confirmation link has been sent to your email', resetSentMsg:'A password reset link has been sent to your email',
-    needAccountMsg:'Log in to save favorites and reading history',
+    pageOf:(n,total)=>`Page ${n} of ${total}`,
     drawSizeLabel:'Size',
+    confirmReset:'This will permanently delete favorites, reading history, and drawings saved on this device. Continue?',
   }
 };
 
 let state = {
-  lang:'ar', theme:'paper', loggedIn:false, isGuest:false, user:null,
-  favorites:new Set(), history:new Set(), myRatings:{},
+  lang:'ar', theme:'paper',
+  user:{ name:'', sub:'' },
+  favorites:new Set(), history:new Set(),
   activeTab:'home', drawerTab:'fav', selectedCategory:null,
   booksLoaded:false, currentPdfBookId:null
 };
-let authMode = 'login';
 
 function catInfo(key){ return CATEGORIES.find(c=>c.key===key) || {ar:key, en:key, color:'#0F5C4E'}; }
 function t(key){ return I18N[state.lang][key] || key; }
 
-function switchAuthTab(mode){
-  authMode = mode;
-  document.getElementById('authTabLogin').classList.toggle('active', mode==='login');
-  document.getElementById('authTabSignup').classList.toggle('active', mode==='signup');
-  document.getElementById('loginForm').hidden = mode !== 'login';
-  document.getElementById('signupForm').hidden = mode !== 'signup';
-  hideAuthMsg();
+/* ============== تخزين محلي دائم على الجهاز (بدون أي حساب) ============== */
+const LOCAL_KEY = 'imamLibrary_localData';
+function loadLocalData(){
+  try{
+    const d = JSON.parse(localStorage.getItem(LOCAL_KEY));
+    return d || { favorites:[], history:[], positions:{}, drawings:{} };
+  }catch(e){ return { favorites:[], history:[], positions:{}, drawings:{} }; }
 }
-function showAuthMsg(text, type){
-  const el = document.getElementById('authMsg');
-  el.textContent = text;
-  el.className = 'authMsg show ' + type;
+function saveLocalData(data){
+  try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(data)); }catch(e){}
 }
-function hideAuthMsg(){ document.getElementById('authMsg').className = 'authMsg'; }
-
-function setBtnLoading(btnId, loading, labelKey){
-  const btn = document.getElementById(btnId);
-  btn.disabled = loading;
-  btn.innerHTML = loading ? '<span class="spinner"></span>' : `<span data-t="${labelKey}">${t(labelKey)}</span>`;
+function getSavedDrawing(bookId, pageNum){
+  const d = loadLocalData();
+  return (d.drawings[bookId] && d.drawings[bookId][pageNum]) || null;
 }
-
-async function handleLogin(e){
-  e.preventDefault(); if(!requireConfig()) return false; hideAuthMsg();
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
-  setBtnLoading('loginSubmitBtn', true);
-  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-  setBtnLoading('loginSubmitBtn', false, 'loginBtn');
-  if(error){ showAuthMsg(t('errInvalidCreds'), 'err'); return false; }
-  await onAuthenticated(data.user); return false;
+function saveDrawingForPage(bookId, pageNum, canvas){
+  const d = loadLocalData();
+  if(!d.drawings[bookId]) d.drawings[bookId] = {};
+  d.drawings[bookId][pageNum] = canvas.toDataURL('image/png');
+  saveLocalData(d);
+}
+function resetLocalData(){
+  if(!confirm(t('confirmReset'))) return;
+  localStorage.removeItem(LOCAL_KEY);
+  location.reload();
 }
 
-async function handleSignup(e){
-  e.preventDefault(); if(!requireConfig()) return false; hideAuthMsg();
-  const name = document.getElementById('signupName').value.trim();
-  const email = document.getElementById('signupEmail').value.trim();
-  const password = document.getElementById('signupPassword').value;
-  if(password.length < 6){ showAuthMsg(t('errWeakPass'), 'err'); return false; }
-  setBtnLoading('signupSubmitBtn', true);
-  const { data, error } = await supabaseClient.auth.signUp({ email, password, options:{ data:{ full_name:name } } });
-  setBtnLoading('signupSubmitBtn', false, 'signupBtn');
-  if(error){ showAuthMsg(t('errEmailTaken'), 'err'); return false; }
-  if(data.session) { await onAuthenticated(data.user); } else { showAuthMsg(t('checkEmailMsg'), 'ok'); }
-  return false;
-}
+/* ============== بدء التطبيق مباشرة بدون شاشة تسجيل دخول ============== */
+window.addEventListener('DOMContentLoaded', ()=>{
+  const d = loadLocalData();
+  state.user = { name:t('visitorName'), sub:t('visitorSub') };
+  state.favorites = new Set(d.favorites);
+  state.history = new Set(d.history);
+  enterApp();
+});
 
-async function loginWithGoogle(){ if(!requireConfig()) return; await supabaseClient.auth.signInWithOAuth({ provider:'google' }); }
-async function handleForgotPassword(){
-  if(!requireConfig()) return;
-  const email = document.getElementById('loginEmail').value.trim();
-  if(!email){ showAuthMsg(t('emailLabel'), 'err'); return; }
-  const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
-  showAuthMsg(error ? t('errGeneric') : t('resetSentMsg'), error ? 'err' : 'ok');
-}
-function requireConfig(){ if(!CONFIGURED){ showAuthMsg(t('notConnected'), 'err'); return false; } return true; }
-
-async function onAuthenticated(user){
-  state.isGuest = false; state.loggedIn = true;
-  const fullName = user.user_metadata && user.user_metadata.full_name ? user.user_metadata.full_name : user.email;
-  state.user = { id:user.id, name:fullName, sub:user.email, initial:(fullName||'?').trim().charAt(0).toUpperCase() };
-  await loadUserData(); enterApp();
-}
-async function logout(){
-  closeDrawer(); if(supabaseClient && !state.isGuest){ await supabaseClient.auth.signOut(); }
-  state.loggedIn = false; state.isGuest = false; state.user = null;
-  state.favorites = new Set(); state.history = new Set();
-  document.getElementById('mainApp').hidden = true; document.getElementById('loginScreen').hidden = false;
-}
 function enterApp(){
-  document.getElementById('loginScreen').hidden = true; document.getElementById('mainApp').hidden = false;
   Promise.all([loadBooks(), loadAdhkar(), loadRatings()]).then(()=>{ renderAll(); });
 }
-
-window.addEventListener('DOMContentLoaded', async ()=>{
-  if(!CONFIGURED) return;
-  const { data } = await supabaseClient.auth.getSession();
-  if(data.session && data.session.user){ await onAuthenticated(data.session.user); }
-});
 
 async function loadBooks(){
   const grid = document.getElementById('homeGrid');
@@ -667,26 +558,6 @@ function ratingStatsFor(bookId){
   if(!rows.length) return { avg:0, count:0 };
   return { avg: rows.reduce((s,r)=>s+r.rating, 0)/rows.length, count: rows.length };
 }
-async function rateBook(id, value){
-  if(state.isGuest){ showToast(t('needAccountMsg')); return; }
-  if(!CONFIGURED || !state.user) return;
-  state.myRatings[id] = value;
-  await supabaseClient.from('book_ratings').upsert({ user_id: state.user.id, book_id: id, rating: value }, { onConflict:'user_id,book_id' });
-  await loadRatings(); openBookModal(id);
-}
-
-async function loadUserData(){
-  if(!CONFIGURED || !state.user || !state.user.id) return;
-  const uid = state.user.id;
-  const [{ data: favs }, { data: hist }, { data: myRates }] = await Promise.all([
-    supabaseClient.from('favorites').select('book_id').eq('user_id', uid),
-    supabaseClient.from('reading_history').select('book_id').eq('user_id', uid),
-    supabaseClient.from('book_ratings').select('book_id, rating').eq('user_id', uid),
-  ]);
-  state.favorites = new Set((favs||[]).map(r=>r.book_id));
-  state.history = new Set((hist||[]).map(r=>r.book_id));
-  state.myRatings = {}; (myRates||[]).forEach(r=>{ state.myRatings[r.book_id] = r.rating; });
-}
 
 function setTheme(theme){ state.theme = theme; document.documentElement.setAttribute('data-theme', theme); }
 function toggleLang(){
@@ -694,6 +565,7 @@ function toggleLang(){
   document.documentElement.lang = state.lang; document.documentElement.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
   document.documentElement.setAttribute('data-lang', state.lang);
   document.getElementById('langBtn').textContent = state.lang === 'ar' ? 'EN' : 'AR';
+  state.user = { name:t('visitorName'), sub:t('visitorSub') };
   renderAll();
 }
 function applyStaticTranslations(){
@@ -751,7 +623,7 @@ function openBookModal(id){
   const b = BOOKS.find(x=>String(x.id)===String(id)); if(!b) return;
   const info = catInfo(b.cat); const isFav = state.favorites.has(b.id); const isRead = state.history.has(b.id);
   const { avg, count } = ratingStatsFor(b.id);
-  const starsHtml = [1,2,3,4,5].map(n=> `<span class="star ${n<=(state.myRatings[b.id]||0)?'filled':''}" onclick="rateBook('${b.id}', ${n})">★</span>`).join('');
+  const starsHtml = [1,2,3,4,5].map(n=> `<span class="star ${n<=Math.round(avg)?'filled':''}">★</span>`).join('');
   document.getElementById('bookModal').innerHTML = `
     <button class="modal-close" onclick="closeModal()">✕</button>
     <div class="modal-cover" style="background:${b.color||info.color}">📕</div>
@@ -769,64 +641,22 @@ function openBookModal(id){
 function closeModal(){ document.getElementById('modalOverlay').hidden = true; }
 function closeModalOnOverlay(e){ if(e.target.id==='modalOverlay') closeModal(); }
 
-/* ============== تخزين محلي لبيانات الضيف (بدون حساب) ============== */
-const GUEST_KEY = 'imamLibrary_guestData';
-function loadGuestData(){
-  try{
-    const d = JSON.parse(localStorage.getItem(GUEST_KEY));
-    return d || { favorites:[], history:[], positions:{}, drawings:{} };
-  }catch(e){ return { favorites:[], history:[], positions:{}, drawings:{} }; }
-}
-function saveGuestData(data){
-  try{ localStorage.setItem(GUEST_KEY, JSON.stringify(data)); }catch(e){}
-}
-function getSavedDrawing(bookId, pageNum){
-  const g = loadGuestData();
-  return (g.drawings[bookId] && g.drawings[bookId][pageNum]) || null;
-}
-function saveDrawingForPage(bookId, pageNum, canvas){
-  const g = loadGuestData();
-  if(!g.drawings[bookId]) g.drawings[bookId] = {};
-  g.drawings[bookId][pageNum] = canvas.toDataURL('image/png');
-  saveGuestData(g);
-}
-
-function continueAsGuest(){
-  state.isGuest = true; state.loggedIn = true;
-  state.user = { name:t('guestName'), sub:t('guestSub'), initial:'؟' };
-  const g = loadGuestData();
-  state.favorites = new Set(g.favorites);
-  state.history = new Set(g.history);
-  enterApp();
-}
-
-async function toggleFav(id){
+function toggleFav(id){
   const has = state.favorites.has(id);
   if(has){ state.favorites.delete(id); } else { state.favorites.add(id); }
   openBookModal(id); renderHomeGrid(); renderSearch(); renderDrawerList();
-  if(state.isGuest){
-    const g = loadGuestData(); g.favorites = [...state.favorites]; saveGuestData(g); return;
-  }
-  if(CONFIGURED && state.user){
-    if(has){ await supabaseClient.from('favorites').delete().eq('user_id', state.user.id).eq('book_id', id); }
-    else { await supabaseClient.from('favorites').insert({ user_id: state.user.id, book_id: id }); }
-  }
+  const d = loadLocalData(); d.favorites = [...state.favorites]; saveLocalData(d);
 }
-async function toggleRead(id){
+function toggleRead(id){
   const has = state.history.has(id);
   if(has){ state.history.delete(id); } else { state.history.add(id); }
   openBookModal(id); renderDrawerList();
-  if(state.isGuest){
-    const g = loadGuestData(); g.history = [...state.history]; saveGuestData(g); return;
-  }
-  if(CONFIGURED && state.user){
-    if(has){ await supabaseClient.from('reading_history').delete().eq('user_id', state.user.id).eq('book_id', id); }
-    else { await supabaseClient.from('reading_history').insert({ user_id: state.user.id, book_id: id }); }
-  }
+  const d = loadLocalData(); d.history = [...state.history]; saveLocalData(d);
 }
 
 /* =========================================================================
-   القارئ: تحميل مسبق كامل (Blob) + تمرير عمودي متصل فقط + تكبير حاد الوضوح (إعادة رسم حقيقية) + رسم وهايلايت
+   القارئ: تحميل مسبق كامل (Blob) + تمرير عمودي متصل + تكبير حاد الوضوح + رسم وهايلايت
+   كل تقدم القراءة والرسومات يُحفظ تلقائيًا على الجهاز بدون أي حساب
    ========================================================================= */
 let pdfInstance = null;
 if(typeof pdfjsLib !== 'undefined'){
@@ -834,7 +664,7 @@ if(typeof pdfjsLib !== 'undefined'){
 }
 
 let readerState = { zoom:1 };
-let pdfPagesMeta = []; // { pageNum, baseScale, unscaledWidth, unscaledHeight, canvasEl }
+let pdfPagesMeta = [];
 let zoomRenderTimer = null;
 let drawState = { mode:false, tool:'pen', color:'#e53e3e', size:4, drawing:false, lastX:0, lastY:0, activeCanvas:null };
 
@@ -897,7 +727,6 @@ async function readBook(id){
     
     document.getElementById('readerPageNum').textContent = t('loading');
     
-    // معالجة ورسم كافة صفحات الكتاب بدقة عالية (تراعي كثافة بكسل الشاشة) مع طبقة رسم/تظليل شفافة فوق كل صفحة
     const totalPages = pdfInstance.numPages;
     const availableWidth = wrap.clientWidth - 20;
     const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
@@ -935,7 +764,6 @@ async function readBook(id){
       pageContainer.appendChild(drawCanvas);
       attachDrawEvents(drawCanvas, id, i);
 
-      // استعادة أي رسم/هايلايت محفوظ سابقًا لهذه الصفحة (وضع الضيف)
       const savedDrawing = getSavedDrawing(id, i);
       if(savedDrawing){
         const dImg = new Image();
@@ -952,14 +780,11 @@ async function readBook(id){
     if(CONFIGURED) supabaseClient.rpc('increment_book_views', { p_book_id: id }).then(()=>{});
     if(!state.history.has(id)){ toggleRead(id); }
 
-    // الرجوع لآخر صفحة وصل لها الضيف بهذا الكتاب
-    if(state.isGuest){
-      const g = loadGuestData();
-      const savedPage = g.positions[id];
-      if(savedPage){
-        const target = container.querySelector(`[data-page="${savedPage}"]`);
-        if(target) setTimeout(()=> target.scrollIntoView(), 50);
-      }
+    const d0 = loadLocalData();
+    const savedPage = d0.positions[id];
+    if(savedPage){
+      const target = container.querySelector(`[data-page="${savedPage}"]`);
+      if(target) setTimeout(()=> target.scrollIntoView(), 50);
     }
 
     wrap.onscroll = () => {
@@ -969,14 +794,12 @@ async function readBook(id){
         const inView = (rect.top >= 0 && rect.top <= window.innerHeight / 2);
         if (inView) {
           document.getElementById('readerPageNum').textContent = t('pageOf')(child.dataset.page, totalPages);
-          if(state.isGuest){
-            clearTimeout(window._posSaveTimer);
-            window._posSaveTimer = setTimeout(()=>{
-              const g = loadGuestData();
-              g.positions[id] = child.dataset.page;
-              saveGuestData(g);
-            }, 400);
-          }
+          clearTimeout(window._posSaveTimer);
+          window._posSaveTimer = setTimeout(()=>{
+            const d = loadLocalData();
+            d.positions[id] = child.dataset.page;
+            saveLocalData(d);
+          }, 400);
           break;
         }
       }
@@ -995,7 +818,6 @@ function closeReader(){
   pdfPagesMeta = [];
 }
 
-/* ---------- تكبير/تصغير مع إعادة رسم حقيقية من ملف الـ PDF (بدون تغويش) ---------- */
 function zoomReader(delta){
   readerState.zoom = Math.min(3, Math.max(0.5, +(readerState.zoom + delta).toFixed(2)));
   document.getElementById('zoomLabel').textContent = Math.round(readerState.zoom * 100) + '%';
@@ -1020,7 +842,6 @@ async function renderPagesAtCurrentZoom(){
   }
 }
 
-/* ---------- أدوات الرسم والتظليل (هايلايت) فوق صفحات الكتاب ---------- */
 function toggleDrawPanel(){
   drawState.mode = !drawState.mode;
   document.getElementById('drawToolbar').hidden = !drawState.mode;
@@ -1078,7 +899,7 @@ function attachDrawEvents(canvas, bookId, pageNum){
   });
   const endDraw = ()=>{
     drawState.drawing = false; drawState.activeCanvas = null;
-    if(state.isGuest && bookId){ saveDrawingForPage(bookId, pageNum, canvas); }
+    if(bookId){ saveDrawingForPage(bookId, pageNum, canvas); }
   };
   canvas.addEventListener('pointerup', endDraw);
   canvas.addEventListener('pointercancel', endDraw);
@@ -1089,10 +910,10 @@ function clearAllDrawings(){
   document.querySelectorAll('.draw-canvas').forEach(c=>{
     c.getContext('2d').clearRect(0, 0, c.width, c.height);
   });
-  if(state.isGuest && state.currentPdfBookId){
-    const g = loadGuestData();
-    delete g.drawings[state.currentPdfBookId];
-    saveGuestData(g);
+  if(state.currentPdfBookId){
+    const d = loadLocalData();
+    delete d.drawings[state.currentPdfBookId];
+    saveLocalData(d);
   }
 }
 
@@ -1103,7 +924,6 @@ function showToast(msg){
 
 function openDrawer(){
   document.getElementById('drawerOverlay').hidden = false; document.getElementById('profileDrawer').hidden = false;
-  document.getElementById('drawerAvatar').textContent = state.user.initial;
   document.getElementById('drawerName').textContent = state.user.name; document.getElementById('drawerSub').textContent = state.user.sub;
   renderDrawerList();
 }
