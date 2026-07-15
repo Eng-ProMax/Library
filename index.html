@@ -298,54 +298,9 @@
         <h1 class="display" data-t="appName">مكتبة إمام المتقين</h1>
         <p class="sub" data-t="loginSubtitle">مكتبتك العربية للقراءة والاكتشاف</p>
 
-        <div class="authTabs">
-          <button class="authTabBtn active" id="authTabLogin" onclick="switchAuthTab('login')" data-t="loginTab">تسجيل الدخول</button>
-          <button class="authTabBtn" id="authTabSignup" onclick="switchAuthTab('signup')" data-t="signupTab">حساب جديد</button>
-        </div>
+       
 
-        <div class="authMsg" id="authMsg"></div>
-
-        <!-- LOGIN FORM -->
-        <form id="loginForm" onsubmit="return handleLogin(event)">
-          <div class="field">
-            <label data-t="emailLabel">البريد الإلكتروني</label>
-            <input type="email" id="loginEmail" required autocomplete="email">
-          </div>
-          <div class="field">
-            <label data-t="passwordLabel">كلمة المرور</label>
-            <input type="password" id="loginPassword" required autocomplete="current-password">
-          </div>
-          <button class="btn primary" type="submit" id="loginSubmitBtn"><span data-t="loginBtn">تسجيل الدخول</span></button>
-          <button type="button" class="guest-link" onclick="handleForgotPassword()" data-t="forgotPassword">نسيت كلمة المرور؟</button>
-        </form>
-
-        <!-- SIGNUP FORM -->
-        <form id="signupForm" hidden onsubmit="return handleSignup(event)">
-          <div class="field">
-            <label data-t="nameLabel">الاسم</label>
-            <input type="text" id="signupName" required autocomplete="name">
-          </div>
-          <div class="field">
-            <label data-t="emailLabel">البريد الإلكتروني</label>
-            <input type="email" id="signupEmail" required autocomplete="email">
-          </div>
-          <div class="field">
-            <label data-t="passwordLabel">كلمة المرور</label>
-            <input type="password" id="signupPassword" required minlength="6" autocomplete="new-password">
-          </div>
-          <button class="btn primary" type="submit" id="signupSubmitBtn"><span data-t="signupBtn">إنشاء حساب</span></button>
-        </form>
-
-        <div class="divider-text" data-t="or">أو</div>
-        <button class="btn" onclick="loginWithGoogle()">
-          <span>G</span><span data-t="continueGoogle">المتابعة عبر Google</span>
-        </button>
-        <button class="guest-link" onclick="continueAsGuest()" data-t="continueGuest">تصفح كضيف بدون حساب</button>
-      </div>
-      <div class="config-warning" id="configWarning" hidden></div>
-    </div>
-  </div>
-
+       
   <!-- MAIN APP -->
   <div id="mainApp" hidden>
     <header class="topbar">
