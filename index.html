@@ -530,7 +530,7 @@ const I18N = {
     switchLangBtn:'التبديل إلى English', logoutBtn:'تسجيل الخروج',
     by:'تأليف', addFav:'➕ أضف إلى المفضلة', removeFav:'✓ في المفضلة', markRead:'📖 وضع علامة مقروء', markedRead:'✓ تمت قراءته',
     emptyFav:'لا توجد كتب في المفضلة بعد. أضف كتابًا من المكتبة!', emptyHist:'لم تُسجَّل قراءة أي كتاب بعد.',
-    noResults:'لا توجد نتائج مطابقة', guestName:'ضيف', guestSub:'وضع الضيف — لن تُحفظ مفضلتك أو سجل قراءتك',
+    noResults:'لا توجد نتائج مطابقة', guestName:'ضيف', guestSub:'وضع الضيف — محفوظ محليًا على هذا الجهاز فقط',
     readBtn:'📖 قراءة الكتاب', noPdfMsg:'لم تتم إضافة نسخة القراءة لهذا الكتاب بعد',
     emptyLibrary:'المكتبة فارغة حاليًا', emptyLibraryDesc:'أضف كتبًا من لوحة تحكم المدير لتظهر هنا فورًا لجميع المستخدمين.',
     notConnected:'لم يتم الاتصال بقاعدة البيانات بعد', notConnectedDesc:'أضف بيانات Supabase أعلى ملف الكود لتفعيل الحسابات والكتب.',
@@ -558,7 +558,7 @@ const I18N = {
     switchLangBtn:'Switch to العربية', logoutBtn:'Log out',
     by:'by', addFav:'➕ Add to favorites', removeFav:'✓ In favorites', markRead:'📖 Mark as read', markedRead:'✓ Read',
     emptyFav:'No favorites yet. Add a book from the library!', emptyHist:'No books marked as read yet.',
-    noResults:'No matching results', guestName:'Guest', guestSub:'Guest mode — favorites and history won\'t be saved',
+    noResults:'No matching results', guestName:'Guest', guestSub:'Guest mode — saved locally on this device only',
     readBtn:'📖 Read book', noPdfMsg:'This book has no reading copy uploaded yet',
     emptyLibrary:'The library is empty right now', emptyLibraryDesc:'Add books from the admin dashboard and they will appear here instantly for every user.',
     notConnected:'Not connected to a database yet', notConnectedDesc:'Add your Supabase credentials at the top of the code to enable accounts and books.',
@@ -638,11 +638,7 @@ async function handleForgotPassword(){
   showAuthMsg(error ? t('errGeneric') : t('resetSentMsg'), error ? 'err' : 'ok');
 }
 function requireConfig(){ if(!CONFIGURED){ showAuthMsg(t('notConnected'), 'err'); return false; } return true; }
-function continueAsGuest(){
-  state.isGuest = true; state.loggedIn = true;
-  state.user = { name:t('guestName'), sub:t('guestSub'), initial:'؟' };
-  enterApp();
-}
+
 async function onAuthenticated(user){
   state.isGuest = false; state.loggedIn = true;
   const fullName = user.user_metadata && user.user_metadata.full_name ? user.user_metadata.full_name : user.email;
@@ -818,21 +814,56 @@ function openBookModal(id){
 function closeModal(){ document.getElementById('modalOverlay').hidden = true; }
 function closeModalOnOverlay(e){ if(e.target.id==='modalOverlay') closeModal(); }
 
+/* ============== تخزين محلي لبيانات الضيف (بدون حساب) ============== */
+const GUEST_KEY = 'imamLibrary_guestData';
+function loadGuestData(){
+  try{
+    const d = JSON.parse(localStorage.getItem(GUEST_KEY));
+    return d || { favorites:[], history:[], positions:{}, drawings:{} };
+  }catch(e){ return { favorites:[], history:[], positions:{}, drawings:{} }; }
+}
+function saveGuestData(data){
+  try{ localStorage.setItem(GUEST_KEY, JSON.stringify(data)); }catch(e){}
+}
+function getSavedDrawing(bookId, pageNum){
+  const g = loadGuestData();
+  return (g.drawings[bookId] && g.drawings[bookId][pageNum]) || null;
+}
+function saveDrawingForPage(bookId, pageNum, canvas){
+  const g = loadGuestData();
+  if(!g.drawings[bookId]) g.drawings[bookId] = {};
+  g.drawings[bookId][pageNum] = canvas.toDataURL('image/png');
+  saveGuestData(g);
+}
+
+function continueAsGuest(){
+  state.isGuest = true; state.loggedIn = true;
+  state.user = { name:t('guestName'), sub:t('guestSub'), initial:'؟' };
+  const g = loadGuestData();
+  state.favorites = new Set(g.favorites);
+  state.history = new Set(g.history);
+  enterApp();
+}
+
 async function toggleFav(id){
-  if(state.isGuest){ showToast(t('needAccountMsg')); return; }
   const has = state.favorites.has(id);
   if(has){ state.favorites.delete(id); } else { state.favorites.add(id); }
   openBookModal(id); renderHomeGrid(); renderSearch(); renderDrawerList();
+  if(state.isGuest){
+    const g = loadGuestData(); g.favorites = [...state.favorites]; saveGuestData(g); return;
+  }
   if(CONFIGURED && state.user){
     if(has){ await supabaseClient.from('favorites').delete().eq('user_id', state.user.id).eq('book_id', id); }
     else { await supabaseClient.from('favorites').insert({ user_id: state.user.id, book_id: id }); }
   }
 }
 async function toggleRead(id){
-  if(state.isGuest){ showToast(t('needAccountMsg')); return; }
   const has = state.history.has(id);
   if(has){ state.history.delete(id); } else { state.history.add(id); }
   openBookModal(id); renderDrawerList();
+  if(state.isGuest){
+    const g = loadGuestData(); g.history = [...state.history]; saveGuestData(g); return;
+  }
   if(CONFIGURED && state.user){
     if(has){ await supabaseClient.from('reading_history').delete().eq('user_id', state.user.id).eq('book_id', id); }
     else { await supabaseClient.from('reading_history').insert({ user_id: state.user.id, book_id: id }); }
@@ -947,7 +978,15 @@ async function readBook(id){
       drawCanvas.width = viewport.width;
       drawCanvas.height = viewport.height;
       pageContainer.appendChild(drawCanvas);
-      attachDrawEvents(drawCanvas);
+      attachDrawEvents(drawCanvas, id, i);
+
+      // استعادة أي رسم/هايلايت محفوظ سابقًا لهذه الصفحة (وضع الضيف)
+      const savedDrawing = getSavedDrawing(id, i);
+      if(savedDrawing){
+        const dImg = new Image();
+        dImg.onload = ()=> drawCanvas.getContext('2d').drawImage(dImg, 0, 0, drawCanvas.width, drawCanvas.height);
+        dImg.src = savedDrawing;
+      }
 
       container.appendChild(pageContainer);
     }
@@ -958,6 +997,16 @@ async function readBook(id){
     if(CONFIGURED) supabaseClient.rpc('increment_book_views', { p_book_id: id }).then(()=>{});
     if(!state.history.has(id)){ toggleRead(id); }
 
+    // الرجوع لآخر صفحة وصل لها الضيف بهذا الكتاب
+    if(state.isGuest){
+      const g = loadGuestData();
+      const savedPage = g.positions[id];
+      if(savedPage){
+        const target = container.querySelector(`[data-page="${savedPage}"]`);
+        if(target) setTimeout(()=> target.scrollIntoView(), 50);
+      }
+    }
+
     wrap.onscroll = () => {
       const children = container.children;
       for (let child of children) {
@@ -965,6 +1014,14 @@ async function readBook(id){
         const inView = (rect.top >= 0 && rect.top <= window.innerHeight / 2);
         if (inView) {
           document.getElementById('readerPageNum').textContent = t('pageOf')(child.dataset.page, totalPages);
+          if(state.isGuest){
+            clearTimeout(window._posSaveTimer);
+            window._posSaveTimer = setTimeout(()=>{
+              const g = loadGuestData();
+              g.positions[id] = child.dataset.page;
+              saveGuestData(g);
+            }, 400);
+          }
           break;
         }
       }
@@ -1033,7 +1090,7 @@ function getPointerPos(canvas, evt){
   return { x: (evt.clientX - rect.left) * scaleX, y: (evt.clientY - rect.top) * scaleY };
 }
 
-function attachDrawEvents(canvas){
+function attachDrawEvents(canvas, bookId, pageNum){
   canvas.addEventListener('pointerdown', (e)=>{
     if(!drawState.mode) return;
     drawState.drawing = true; drawState.activeCanvas = canvas;
@@ -1064,7 +1121,10 @@ function attachDrawEvents(canvas){
     ctx.beginPath(); ctx.moveTo(drawState.lastX, drawState.lastY); ctx.lineTo(pos.x, pos.y); ctx.stroke();
     drawState.lastX = pos.x; drawState.lastY = pos.y;
   });
-  const endDraw = ()=>{ drawState.drawing = false; drawState.activeCanvas = null; };
+  const endDraw = ()=>{
+    drawState.drawing = false; drawState.activeCanvas = null;
+    if(state.isGuest && bookId){ saveDrawingForPage(bookId, pageNum, canvas); }
+  };
   canvas.addEventListener('pointerup', endDraw);
   canvas.addEventListener('pointercancel', endDraw);
   canvas.addEventListener('pointerleave', endDraw);
@@ -1074,6 +1134,11 @@ function clearAllDrawings(){
   document.querySelectorAll('.draw-canvas').forEach(c=>{
     c.getContext('2d').clearRect(0, 0, c.width, c.height);
   });
+  if(state.isGuest && state.currentPdfBookId){
+    const g = loadGuestData();
+    delete g.drawings[state.currentPdfBookId];
+    saveGuestData(g);
+  }
 }
 
 function showToast(msg){
